@@ -1,0 +1,35 @@
+[package]
+name = "kernel"
+version = "0.1.0"
+authors = ["KernelFreeze <kernelfreeze@outlook.com>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+bootloader = { git = "https://github.com/rust-osdev/bootloader", branch = "uefi" }
+volatile = { version = "0.4.3", features = ["unstable"] }
+font8x8 = { version = "0.2.7", default-features = false, features = ["unicode"] }
+lazy_static = { version = "*", features = ["spin_no_std"] }
+spin = "0.7.1"
+x86_64 = { version = "0.13.1", optional = true }
+uart_16550 = { version = "0.2.11", optional = true }
+apic = { git = "https://github.com/rust-osdev/apic", optional = true }
+slabmalloc = {git = "https://github.com/gz/rust-slabmalloc"}
+futures = { version = "0.3", default-features = false }
+
+[features]
+default = ["arch_x86_64"]
+
+arch_arm64 = []
+arch_x86_32 = []
+arch_risc_v = []
+arch_x86_64 = ["uart_16550", "x86_64", "apic"]
+
+[package.metadata.bootloader]
+map-physical-memory = true
+
+[dependencies.crossbeam-queue]
+version = "0.3.1"
+default-features = false
+features = ["alloc"]
