@@ -1,24 +1,19 @@
 use bootloader::memory_region::{MemoryRegion, MemoryRegionKind};
-use x86_64::{PhysAddr, VirtAddr, structures::paging::{FrameAllocator, FrameDeallocator, OffsetPageTable, PageTable, PhysFrame, Size4KiB}};
+use x86_64::{
+    structures::paging::{
+        FrameAllocator, FrameDeallocator, OffsetPageTable, PageTable, PhysFrame, Size4KiB,
+    },
+    PhysAddr, VirtAddr,
+};
 
 /// Initialize a new OffsetPageTable.
-///
-/// This function is unsafe because the caller must guarantee that the
-/// complete physical memory is mapped to virtual memory at the passed
-/// `physical_memory_offset`. Also, this function must be only called once
-/// to avoid aliasing `&mut` references (which is undefined behavior).
-pub(crate) fn init(physical_memory_offset: VirtAddr) -> OffsetPageTable<'static> {
-    let level_4_table = active_level_4_table(physical_memory_offset);
+pub fn init(physical_memory_offset: VirtAddr) -> OffsetPageTable<'static> {
+    let level_4_table = read_active_page_table(physical_memory_offset);
     unsafe { OffsetPageTable::new(level_4_table, physical_memory_offset) }
 }
 
 /// Returns a mutable reference to the active level 4 table.
-///
-/// This function is unsafe because the caller must guarantee that the
-/// complete physical memory is mapped to virtual memory at the passed
-/// `physical_memory_offset`. Also, this function must be only called once
-/// to avoid aliasing `&mut` references (which is undefined behavior).
-pub(crate) fn active_level_4_table(physical_memory_offset: VirtAddr) -> &'static mut PageTable {
+pub fn read_active_page_table(physical_memory_offset: VirtAddr) -> &'static mut PageTable {
     use x86_64::registers::control::Cr3;
 
     let (level_4_table_frame, _) = Cr3::read();
@@ -30,7 +25,6 @@ pub(crate) fn active_level_4_table(physical_memory_offset: VirtAddr) -> &'static
     unsafe { &mut *page_table_ptr }
 }
 
-
 /// A FrameAllocator that returns usable frames from the bootloader's memory map.
 pub struct KernelFrameAllocator {
     memory_regions: &'static mut [MemoryRegion],
@@ -38,7 +32,7 @@ pub struct KernelFrameAllocator {
 }
 
 impl KernelFrameAllocator {
-    pub fn init(memory_regions: &'static mut [MemoryRegion]) -> Self {
+    pub fn new(memory_regions: &'static mut [MemoryRegion]) -> Self {
         KernelFrameAllocator {
             memory_regions,
             next: 0,
@@ -67,8 +61,6 @@ unsafe impl FrameAllocator<Size4KiB> for KernelFrameAllocator {
     }
 }
 
-unsafe impl FrameDeallocator<Size4KiB> for KernelFrameAllocator {
-    fn deallocate_frame(&mut self, frame: PhysFrame<S>) {
-
-    }
+impl FrameDeallocator<Size4KiB> for KernelFrameAllocator {
+    unsafe fn deallocate_frame(&mut self, frame: PhysFrame<Size4KiB>) {}
 }

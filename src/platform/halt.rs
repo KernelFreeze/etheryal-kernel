@@ -1,4 +1,4 @@
-#[cfg(feature = "x86_64")]
+#[cfg(target_arch = "x86_64")]
 pub fn halt_cpu() -> ! {
     loop {
         x86_64::instructions::hlt();

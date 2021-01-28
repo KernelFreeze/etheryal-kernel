@@ -39,6 +39,15 @@ version = "0.10.0-alpha-01"
 source = "git+https://github.com/rust-osdev/bootloader?branch=uefi#3c80c4137fcd052d06de6794d469646388d825df"
 
 [[package]]
+name = "buddy_system_allocator"
+version = "0.6.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b4e85e760e105b46ae0bd1236578793c6c147ae7463fe95c8350296b8bfcb830"
+dependencies = [
+ "spin 0.7.1",
+]
+
+[[package]]
 name = "cfg-if"
 version = "1.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -137,15 +146,15 @@ version = "0.1.0"
 dependencies = [
  "apic",
  "bootloader",
+ "buddy_system_allocator",
  "crossbeam-queue",
  "font8x8",
  "futures",
  "lazy_static",
  "slabmalloc",
  "spin 0.7.1",
- "uart_16550",
  "volatile",
- "x86_64 0.13.1",
+ "x86_64",
 ]
 
 [[package]]
@@ -199,30 +208,10 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "13287b4da9d1207a4f4929ac390916d64eacfe236a487e9a9f5b3be392be5162"
 
 [[package]]
-name = "uart_16550"
-version = "0.2.11"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a3b8cdf877945aa66117c608d4e030c11c1e56402112257762d04d8b7938be97"
-dependencies = [
- "bitflags",
- "x86_64 0.12.4",
-]
-
-[[package]]
 name = "volatile"
 version = "0.4.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "8a9dc439ba8353e28f34356cf26f7847e5f15f33ccedde090278fa8ff08f4e10"
-
-[[package]]
-name = "x86_64"
-version = "0.12.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8f3a6840d540b8dbe400f4ed5afe5816105ee5edebe485299a761d0d8b43cef7"
-dependencies = [
- "bit_field 0.9.0",
- "bitflags",
-]
 
 [[package]]
 name = "x86_64"

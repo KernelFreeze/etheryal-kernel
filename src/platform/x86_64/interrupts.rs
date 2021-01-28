@@ -1,4 +1,4 @@
-use crate::{debug, println};
+use crate::println;
 use x86_64::structures::idt::{InterruptDescriptorTable, InterruptStackFrame, PageFaultErrorCode};
 
 use lazy_static::lazy_static;
@@ -24,7 +24,7 @@ pub fn init_idt() {
 }
 
 extern "x86-interrupt" fn breakpoint_handler(stack_frame: &mut InterruptStackFrame) {
-    debug!("BREAKPOINT:\n{:#?}", stack_frame);
+    println!("BREAKPOINT:\n{:#?}", stack_frame);
 }
 
 extern "x86-interrupt" fn double_fault_handler(
@@ -44,8 +44,6 @@ extern "x86-interrupt" fn page_fault_handler(
     println!("Accessed Address: {:?}", Cr2::read());
     println!("Error Code: {:?}", error_code);
     println!("{:#?}", stack_frame);
-
-    crate::platform::halt::halt_cpu();
 }
 
 #[test_case]

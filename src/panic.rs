@@ -1,9 +1,9 @@
 use core::panic::PanicInfo;
+use crate::println;
 
 #[panic_handler]
 #[cfg(not(test))]
 fn panic(info: &PanicInfo) -> ! {
-    use crate::println;
     println!("Kernel panic!");
     println!("{}", info);
     crate::platform::halt::halt_cpu();
@@ -12,9 +12,7 @@ fn panic(info: &PanicInfo) -> ! {
 #[cfg(test)]
 #[panic_handler]
 fn panic(info: &PanicInfo) -> ! {
-    use crate::debug;
-
-    debug!("[failed]\n");
-    debug!("Error: {}\n", info);
+    println!("[failed]\n");
+    println!("Error: {}\n", info);
     crate::platform::halt::halt_cpu();
 }

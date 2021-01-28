@@ -1,12 +1,15 @@
-pub mod halt;
-pub mod memory;
+use bootloader::memory_region::MemoryRegion;
 
-#[cfg(feature = "x86_64")]
+use crate::startup::StartupInfo;
+
+pub mod halt;
+
+#[cfg(target_arch = "x86_64")]
 mod x86_64;
 
-#[cfg(feature = "x86_64")]
-pub fn init_platform() {
-    x86_64::init();
+#[cfg(target_arch = "x86_64")]
+pub fn init_platform(startup_info: StartupInfo) {
+    x86_64::init(startup_info);
 }
 
 #[cfg(feature = "x86_32")]
