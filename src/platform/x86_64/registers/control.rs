@@ -40,15 +40,14 @@ impl Xcr0 {
     /// Read the current set of CR0 flags.
     #[inline]
     pub fn read() -> Xcr0Flags {
-        Xcr0Flags::from_bits_truncate(Self::read_raw())
+        Xcr0Flags::from_bits_truncate(unsafe { Self::read_raw() })
     }
 
     /// Read the current raw CR0 value.
     #[inline]
-    pub fn read_raw() -> u64 {
+    pub unsafe fn read_raw() -> u64 {
         use core::arch::x86_64::_xgetbv;
-
-        unsafe { _xgetbv(0) }
+        _xgetbv(0)
     }
 
     /// Write CR0 flags.
@@ -65,9 +64,7 @@ impl Xcr0 {
         let reserved = old_value & !(Xcr0Flags::all().bits());
         let new_value = reserved | flags.bits();
 
-        unsafe {
-            Self::write_raw(new_value);
-        }
+        Self::write_raw(new_value);
     }
 
     /// Write raw CR0 flags.
@@ -81,10 +78,7 @@ impl Xcr0 {
     #[inline]
     pub unsafe fn write_raw(value: u64) {
         use core::arch::x86_64::_xsetbv;
-
-        unsafe {
-            _xsetbv(0, value);
-        }
+        _xsetbv(0, value);
     }
 
     /// Updates CR0 flags.
@@ -101,8 +95,6 @@ impl Xcr0 {
         F: FnOnce(&mut Xcr0Flags), {
         let mut flags = Self::read();
         f(&mut flags);
-        unsafe {
-            Self::write(flags);
-        }
+        Self::write(flags);
     }
 }

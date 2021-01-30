@@ -2,7 +2,7 @@
 ```bash
 cargo install --force cargo-make
 
-git clone kernel
+git clone https://github.com/etheryal/kernel
 git clone https://github.com/rust-osdev/bootloader --branch uefi
 cd bootloader
 

@@ -19,7 +19,9 @@ mod x86_64;
 
 #[cfg(target_arch = "x86_64")]
 pub fn init_platform() {
-    x86_64::init();
+    unsafe {
+        x86_64::init();
+    }
 }
 
 #[cfg(target_arch = "x86_64")]

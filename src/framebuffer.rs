@@ -25,7 +25,12 @@ const CHARACTER_SPACE: usize = 8;
 pub static WRITER: Mutex<Option<Writer>> = Mutex::new(None);
 
 pub fn init(framebuffer: &'static mut FrameBuffer) {
-    let mut writer = Writer { info: framebuffer.info(), buffer: Volatile::new(framebuffer.buffer_mut()), x_pos: 0, y_pos: 0 };
+    let mut writer = Writer {
+        info: framebuffer.info(),
+        buffer: Volatile::new(framebuffer.buffer_mut()),
+        x_pos: 0,
+        y_pos: 0,
+    };
     writer.clear();
 
     let mut global_writer = WRITER.try_lock().unwrap();
@@ -110,7 +115,9 @@ impl Writer {
         };
         let bytes_per_pixel = self.info.bytes_per_pixel;
         let byte_offset = pixel_offset * bytes_per_pixel;
-        self.buffer.index_mut(byte_offset..(byte_offset + bytes_per_pixel)).copy_from_slice(&color[..bytes_per_pixel]);
+        self.buffer
+            .index_mut(byte_offset..(byte_offset + bytes_per_pixel))
+            .copy_from_slice(&color[..bytes_per_pixel]);
     }
 
     /// Writes the given ASCII string to the buffer.

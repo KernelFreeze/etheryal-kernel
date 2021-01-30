@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#![deny(unsafe_op_in_unsafe_fn)]
-#![feature(unsafe_block_in_unsafe_fn)]
 #![feature(abi_x86_interrupt)]
 #![feature(custom_test_frameworks)]
 #![feature(default_alloc_error_handler)]
@@ -23,7 +21,10 @@
 #![feature(async_closure)]
 #![feature(alloc_prelude)]
 #![feature(asm)]
+#![feature(nonnull_slice_from_raw_parts)]
+#![feature(alloc_layout_extra)]
 #![feature(box_syntax)]
+#![feature(allocator_api)]
 #![test_runner(crate::test_runner::run_all_tests)]
 #![reexport_test_harness_main = "test_main"]
 #![no_std]
@@ -35,7 +36,6 @@ mod panic;
 mod platform;
 mod prelude;
 mod startup;
-mod structures;
 mod tasks;
 mod test_runner;
 mod wasm;

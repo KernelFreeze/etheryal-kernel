@@ -21,6 +21,13 @@ use core::{
 };
 
 pub mod executor;
+pub mod waker;
+pub mod yield_now;
+
+pub use self::yield_now::yield_now;
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+pub struct TaskId(u64);
 
 pub struct Task {
     id: TaskId,
@@ -36,9 +43,6 @@ impl Task {
         self.future.as_mut().poll(context)
     }
 }
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
-struct TaskId(u64);
 
 impl TaskId {
     fn new() -> Self {

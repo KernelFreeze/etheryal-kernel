@@ -24,7 +24,9 @@ lazy_static! {
         let mut idt = InterruptDescriptorTable::new();
 
         unsafe {
-            idt.double_fault.set_handler_fn(double_fault_handler).set_stack_index(super::gdt::DOUBLE_FAULT_IST_INDEX);
+            idt.double_fault
+                .set_handler_fn(double_fault_handler)
+                .set_stack_index(super::gdt::DOUBLE_FAULT_IST_INDEX);
         }
 
         idt.breakpoint.set_handler_fn(breakpoint_handler);
@@ -45,7 +47,9 @@ extern "x86-interrupt" fn double_fault_handler(stack_frame: &mut InterruptStackF
     panic!("DOUBLE FAULT:\n{:#?}", stack_frame);
 }
 
-extern "x86-interrupt" fn page_fault_handler(stack_frame: &mut InterruptStackFrame, error_code: PageFaultErrorCode) {
+extern "x86-interrupt" fn page_fault_handler(
+    stack_frame: &mut InterruptStackFrame, error_code: PageFaultErrorCode,
+) {
     use x86_64::registers::control::Cr2;
 
     println!("EXCEPTION: PAGE FAULT");

@@ -25,39 +25,29 @@ mod registers;
 ///
 /// This function is unsafe because sets CPU registers
 unsafe fn enable_simd() {
-    unsafe {
-        // Enable co-processor (FPU)
-        Cr0::update(|x| *x |= Cr0Flags::MONITOR_COPROCESSOR);
-    }
+    // Enable co-processor (FPU)
+    Cr0::update(|x| *x |= Cr0Flags::MONITOR_COPROCESSOR);
+    
+    // Enable SSE
+    Cr4::update(|x| *x |= Cr4Flags::OSFXSR | Cr4Flags::OSXMMEXCPT_ENABLE | Cr4Flags::OSXSAVE);
 
-    unsafe {
-        // Enable SSE
-        Cr4::update(|x| *x |= Cr4Flags::OSFXSR | Cr4Flags::OSXMMEXCPT_ENABLE | Cr4Flags::OSXSAVE);
-    }
-
+    // Enable AVX if available
     if core_detect::is_x86_feature_detected!("avx") {
-        unsafe {
-            // Enable AVX
-            Xcr0::update(|x| *x |= Xcr0Flags::SSE_STATE | Xcr0Flags::AVX_STATE);
-        }
+        Xcr0::update(|x| *x |= Xcr0Flags::SSE_STATE | Xcr0Flags::AVX_STATE);
     }
 }
 
 pub fn pre_init() {}
 
-pub fn init() {
+pub unsafe fn init() {
     // Initialize Global Descriptor Table
-    unsafe {
-        gdt::init();
-    }
+    gdt::init();
 
     // Initialize Interrupt descriptor table
     interrupts::init_idt();
 
     // Enable SSE and AVX
-    unsafe {
-        enable_simd();
-    }
+    enable_simd();
 
     apic::init();
 }

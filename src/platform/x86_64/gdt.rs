@@ -14,13 +14,13 @@
 
 use lazy_static::lazy_static;
 use x86_64::{
+    instructions::{segmentation::set_cs, tables::load_tss},
     structures::{
         gdt::{Descriptor, GlobalDescriptorTable, SegmentSelector},
         tss::TaskStateSegment,
     },
     VirtAddr,
 };
-
 pub const DOUBLE_FAULT_IST_INDEX: u16 = 0;
 
 struct Descriptors {
@@ -57,11 +57,8 @@ struct Selectors {
 }
 
 pub unsafe fn init() {
-    use x86_64::instructions::{segmentation::set_cs, tables::load_tss};
-
     GDT.gdt.load();
-    unsafe {
-        set_cs(GDT.selectors.code_selector);
-        load_tss(GDT.selectors.tss_selector);
-    }
+
+    set_cs(GDT.selectors.code_selector);
+    load_tss(GDT.selectors.tss_selector);
 }
