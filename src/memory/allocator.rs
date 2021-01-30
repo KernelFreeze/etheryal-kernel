@@ -12,13 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#[cfg(test)]
-pub fn run_all_tests(tests: &[&dyn Fn()]) {
-    use crate::println;
+use bootloader::memory_region::{MemoryRegion, MemoryRegionKind};
+use buddy_system_allocator::LockedHeap;
 
-    println!("Running {} tests", tests.len());
+#[global_allocator]
+static ALLOCATOR: LockedHeap = LockedHeap::empty();
 
-    for test in tests {
-        test();
-    }
+pub fn init(memory_regions: &'static mut [MemoryRegion], offset: u64) {
+    let mut allocator = ALLOCATOR.lock();
+    memory_regions.iter().filter(|r| r.kind == MemoryRegionKind::Usable).for_each(|region| unsafe {
+        allocator.add_to_heap((region.start + offset) as usize, (region.end + offset) as usize);
+    });
 }

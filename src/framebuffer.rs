@@ -1,18 +1,31 @@
-use bootloader::boot_info::{FrameBuffer, PixelFormat};
+// Copyright 2021 Miguel Peláez <kernelfreeze@outlook.com>
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 use core::fmt;
+
+use bootloader::boot_info::{FrameBuffer, PixelFormat};
 use font8x8::UnicodeFonts;
 use spin::Mutex;
 use volatile::Volatile;
 
+const OFFSET: usize = 16;
+const CHARACTER_SPACE: usize = 8;
+
 pub static WRITER: Mutex<Option<Writer>> = Mutex::new(None);
 
 pub fn init(framebuffer: &'static mut FrameBuffer) {
-    let mut writer = Writer {
-        info: framebuffer.info(),
-        buffer: Volatile::new(framebuffer.buffer_mut()),
-        x_pos: 0,
-        y_pos: 0,
-    };
+    let mut writer = Writer { info: framebuffer.info(), buffer: Volatile::new(framebuffer.buffer_mut()), x_pos: 0, y_pos: 0 };
     writer.clear();
 
     let mut global_writer = WRITER.try_lock().unwrap();
@@ -29,12 +42,12 @@ pub struct Writer {
 
 impl Writer {
     fn newline(&mut self) {
-        self.y_pos += 10;
+        self.y_pos += OFFSET;
         self.carriage_return();
     }
 
     fn carriage_return(&mut self) {
-        self.x_pos = 10;
+        self.x_pos = OFFSET;
     }
 
     /// Erases all text on the screen
@@ -46,7 +59,7 @@ impl Writer {
     fn shift_lines_up(&mut self) {
         let offset = self.info.stride * self.info.bytes_per_pixel * 8;
         self.buffer.copy_within(offset.., 0);
-        self.y_pos -= 8;
+        self.y_pos -= OFFSET;
     }
 
     fn width(&self) -> usize {
@@ -65,14 +78,12 @@ impl Writer {
                 if self.x_pos >= self.width() {
                     self.newline();
                 }
-                while self.y_pos >= (self.height() - 10) {
+                while self.y_pos >= (self.height() - OFFSET) {
                     self.shift_lines_up();
                 }
-                let rendered = font8x8::BASIC_FONTS
-                    .get(c)
-                    .expect("character not found in basic font");
+                let rendered = font8x8::BASIC_FONTS.get(c).expect("character not found in basic font");
                 self.write_rendered_char(rendered);
-            }
+            },
         }
     }
 
@@ -83,7 +94,7 @@ impl Writer {
                 self.write_pixel(self.x_pos + x, self.y_pos + y, on);
             }
         }
-        self.x_pos += 8;
+        self.x_pos += CHARACTER_SPACE;
     }
 
     fn write_pixel(&mut self, x: usize, y: usize, on: bool) {
@@ -99,16 +110,14 @@ impl Writer {
         };
         let bytes_per_pixel = self.info.bytes_per_pixel;
         let byte_offset = pixel_offset * bytes_per_pixel;
-        self.buffer
-            .index_mut(byte_offset..(byte_offset + bytes_per_pixel))
-            .copy_from_slice(&color[..bytes_per_pixel]);
+        self.buffer.index_mut(byte_offset..(byte_offset + bytes_per_pixel)).copy_from_slice(&color[..bytes_per_pixel]);
     }
 
     /// Writes the given ASCII string to the buffer.
     ///
-    /// Wraps lines at `BUFFER_WIDTH`. Supports the `\n` newline character. Does **not**
-    /// support strings with non-ASCII characters, since they can't be printed in the VGA text
-    /// mode.
+    /// Wraps lines at `BUFFER_WIDTH`. Supports the `\n` newline character. Does
+    /// **not** support strings with non-ASCII characters, since they can't
+    /// be printed in the VGA text mode.
     fn write_string(&mut self, s: &str) {
         for char in s.chars() {
             self.write_char(char);
@@ -123,13 +132,15 @@ impl fmt::Write for Writer {
     }
 }
 
-/// Like the `print!` macro in the standard library, but prints to the VGA text buffer.
+/// Like the `print!` macro in the standard library, but prints to the VGA text
+/// buffer.
 #[macro_export]
 macro_rules! print {
     ($($arg:tt)*) => ($crate::framebuffer::_print(format_args!($($arg)*)));
 }
 
-/// Like the `println!` macro in the standard library, but prints to the VGA text buffer.
+/// Like the `println!` macro in the standard library, but prints to the VGA
+/// text buffer.
 #[macro_export]
 macro_rules! println {
     () => ($crate::print!("\n"));
@@ -141,6 +152,7 @@ macro_rules! println {
 #[doc(hidden)]
 pub fn _print(args: fmt::Arguments) {
     use core::fmt::Write;
+
     use x86_64::instructions::interrupts;
 
     interrupts::without_interrupts(|| {

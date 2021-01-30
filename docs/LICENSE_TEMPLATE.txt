@@ -1,4 +1,4 @@
-// Copyright 2021 Miguel Peláez <kernelfreeze@outlook.com>
+// Copyright {20\d{2}(-20\d{2})?} Miguel Peláez <kernelfreeze@outlook.com>
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,13 +12,3 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#[cfg(test)]
-pub fn run_all_tests(tests: &[&dyn Fn()]) {
-    use crate::println;
-
-    println!("Running {} tests", tests.len());
-
-    for test in tests {
-        test();
-    }
-}

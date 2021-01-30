@@ -12,13 +12,13 @@ volatile = { version = "0.4.3", features = ["unstable"] }
 font8x8 = { version = "0.2.7", default-features = false, features = ["unicode"] }
 lazy_static = { version = "*", features = ["spin_no_std"] }
 spin = "0.7.1"
-slabmalloc = { git = "https://github.com/gz/rust-slabmalloc" }
 futures = { version = "0.3", default-features = false }
 buddy_system_allocator = "0.6.0"
+bitflags = "1.2.1"
+core_detect = "0.1.0"
 
 [target.'cfg(target_arch = "x86_64")'.dependencies]
 x86_64 = { version = "0.13.1" }
-apic = { git = "https://github.com/rust-osdev/apic" }
 
 [package.metadata.bootloader]
 map-physical-memory = true
@@ -27,3 +27,8 @@ map-physical-memory = true
 version = "0.3.1"
 default-features = false
 features = ["alloc"]
+
+[dependencies.smallvec]
+version = "1.6.1"
+default-features = false
+features = ["union", "const_generics", "specialization", "may_dangle"]

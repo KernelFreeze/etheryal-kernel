@@ -12,13 +12,4 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#[cfg(test)]
-pub fn run_all_tests(tests: &[&dyn Fn()]) {
-    use crate::println;
-
-    println!("Running {} tests", tests.len());
-
-    for test in tests {
-        test();
-    }
-}
+pub mod allocator;
