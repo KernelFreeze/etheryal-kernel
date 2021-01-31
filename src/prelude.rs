@@ -15,4 +15,4 @@
 pub use alloc::{prelude::v1::*, vec};
 pub use core::borrow::Borrow;
 
-pub use crate::{print, println};
+pub use log::*;

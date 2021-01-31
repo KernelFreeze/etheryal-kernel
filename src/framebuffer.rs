@@ -86,7 +86,9 @@ impl Writer {
                 while self.y_pos >= (self.height() - OFFSET) {
                     self.shift_lines_up();
                 }
-                let rendered = font8x8::BASIC_FONTS.get(c).expect("character not found in basic font");
+                let rendered = font8x8::BASIC_FONTS
+                    .get(c)
+                    .expect("character not found in basic font");
                 self.write_rendered_char(rendered);
             },
         }
@@ -136,45 +138,5 @@ impl fmt::Write for Writer {
     fn write_str(&mut self, s: &str) -> fmt::Result {
         self.write_string(s);
         Ok(())
-    }
-}
-
-/// Like the `print!` macro in the standard library, but prints to the VGA text
-/// buffer.
-#[macro_export]
-macro_rules! print {
-    ($($arg:tt)*) => ($crate::framebuffer::_print(format_args!($($arg)*)));
-}
-
-/// Like the `println!` macro in the standard library, but prints to the VGA
-/// text buffer.
-#[macro_export]
-macro_rules! println {
-    () => ($crate::print!("\n"));
-    ($($arg:tt)*) => ($crate::print!("{}\n", format_args!($($arg)*)));
-}
-
-/// Prints the given formatted string to the VGA text buffer
-/// through the global `WRITER` instance.
-#[doc(hidden)]
-pub fn _print(args: fmt::Arguments) {
-    use core::fmt::Write;
-
-    use x86_64::instructions::interrupts;
-
-    interrupts::without_interrupts(|| {
-        WRITER.lock().as_mut().unwrap().write_fmt(args).unwrap();
-    });
-}
-
-#[test_case]
-fn test_println_simple() {
-    println!("test_println_simple output");
-}
-
-#[test_case]
-fn test_println_many() {
-    for _ in 0..200 {
-        println!("test_println_many output");
     }
 }

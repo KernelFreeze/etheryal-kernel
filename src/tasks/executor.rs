@@ -50,31 +50,38 @@ impl TaskExecutor {
 
     pub fn run(&mut self) -> ! {
         loop {
-            let tasks = &mut self.tasks;
-            let task_queue = &self.task_queue;
-            let waker_cache = &mut self.waker_cache;
+            self.run_ready_tasks();
+            self.sleep_if_idle();
+        }
+    }
 
-            match task_queue.pop() {
-                Some(task_id) => {
-                    let task = match tasks.get_mut(&task_id) {
-                        Some(task) => task,
-                        None => continue, // task no longer exists
-                    };
-                    let waker = waker_cache
-                        .entry(task_id)
-                        .or_insert_with(|| TaskWaker::new(task_id, task_queue.clone()));
-                    let mut context = Context::from_waker(waker);
-                    match task.poll(&mut context) {
-                        Poll::Ready(()) => {
-                            // task done -> remove it and its cached waker
-                            tasks.remove(&task_id);
-                            waker_cache.remove(&task_id);
-                        },
-                        Poll::Pending => {},
-                    }
-                },
-                None => crate::platform::halt::halt_cpu(),
+    fn run_ready_tasks(&mut self) {
+        let tasks = &mut self.tasks;
+        let task_queue = &mut self.task_queue;
+        let waker_cache = &mut self.waker_cache;
+
+        while let Some(task_id) = task_queue.pop() {
+            let task = match tasks.get_mut(&task_id) {
+                Some(task) => task,
+                None => continue,
+            };
+
+            let waker = waker_cache
+                .entry(task_id)
+                .or_insert_with(|| TaskWaker::new(task_id, task_queue.clone()));
+            let mut context = Context::from_waker(waker);
+
+            if let Poll::Ready(_) = task.poll(&mut context) {
+                // task done -> remove it and its cached waker
+                tasks.remove(&task_id);
+                waker_cache.remove(&task_id);
             }
+        }
+    }
+
+    fn sleep_if_idle(&self) {
+        if self.task_queue.is_empty() {
+            crate::platform::halt::halt_cpu();
         }
     }
 }

@@ -12,13 +12,32 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#[cfg(test)]
-pub fn run_all_tests(tests: &[&dyn Fn()]) {
-    use crate::prelude::info;
+use core::fmt::{self, Write};
 
-    info!("Running {} tests", tests.len());
+use log::{Level, Metadata, Record};
 
-    for test in tests {
-        test();
+fn print(args: fmt::Arguments) {
+    #[cfg(target_arch = "x86_64")]
+    crate::framebuffer::WRITER
+        .lock()
+        .as_mut()
+        .unwrap()
+        .write_fmt(args)
+        .unwrap();
+}
+
+pub struct KernelLogger;
+
+impl log::Log for KernelLogger {
+    fn enabled(&self, metadata: &Metadata) -> bool {
+        metadata.level() <= Level::Info
     }
+
+    fn log(&self, record: &Record) {
+        if self.enabled(record.metadata()) {
+            print(format_args!("{} - {}", record.level(), record.args()));
+        }
+    }
+
+    fn flush(&self) {}
 }

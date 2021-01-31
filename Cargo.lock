@@ -29,7 +29,7 @@ version = "0.6.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b4e85e760e105b46ae0bd1236578793c6c147ae7463fe95c8350296b8bfcb830"
 dependencies = [
- "spin 0.7.1",
+ "spin",
 ]
 
 [[package]]
@@ -142,20 +142,20 @@ dependencies = [
  "crossbeam-queue",
  "font8x8",
  "futures",
- "lazy_static",
+ "log",
  "smallvec",
- "spin 0.7.1",
+ "spin",
  "volatile",
  "x86_64",
 ]
 
 [[package]]
-name = "lazy_static"
-version = "1.4.0"
+name = "log"
+version = "0.4.14"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e2abad23fbc42b3700f2f279844dc832adb2b2eb069b2df918f455c4e18cc646"
+checksum = "51b9bbe6c47d51fc3e1a9b945965946b4c44142ab8792c50835a980d362c2710"
 dependencies = [
- "spin 0.5.2",
+ "cfg-if",
 ]
 
 [[package]]
@@ -175,12 +175,6 @@ name = "smallvec"
 version = "1.6.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "fe0f37c9e8f3c5a4a66ad655a93c74daac4ad00c441533bf5c6e7990bb42604e"
-
-[[package]]
-name = "spin"
-version = "0.5.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6e63cff320ae2c57904679ba7cb63280a3dc4613885beafb148ee7bf9aa9042d"
 
 [[package]]
 name = "spin"

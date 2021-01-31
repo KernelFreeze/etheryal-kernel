@@ -27,7 +27,7 @@ mod registers;
 unsafe fn enable_simd() {
     // Enable co-processor (FPU)
     Cr0::update(|x| *x |= Cr0Flags::MONITOR_COPROCESSOR);
-    
+
     // Enable SSE
     Cr4::update(|x| *x |= Cr4Flags::OSFXSR | Cr4Flags::OSXMMEXCPT_ENABLE | Cr4Flags::OSXSAVE);
 

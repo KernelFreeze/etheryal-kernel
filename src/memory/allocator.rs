@@ -21,7 +21,10 @@ static ALLOCATOR: LockedHeap = LockedHeap::empty();
 pub fn init(memory_regions: &'static mut [MemoryRegion], offset: u64) {
     let mut allocator = ALLOCATOR.lock();
 
-    memory_regions.iter().filter(|r| r.kind == MemoryRegionKind::Usable).for_each(|region| unsafe {
-        allocator.add_to_heap((region.start + offset) as usize, (region.end + offset) as usize)
-    });
+    memory_regions
+        .iter()
+        .filter(|r| r.kind == MemoryRegionKind::Usable)
+        .for_each(|region| unsafe {
+            allocator.add_to_heap((region.start + offset) as usize, (region.end + offset) as usize)
+        });
 }

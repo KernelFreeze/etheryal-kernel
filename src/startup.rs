@@ -14,7 +14,9 @@
 
 use bootloader::BootInfo;
 
-use crate::{prelude::*, tasks::executor::TaskExecutor};
+use crate::{log::KernelLogger, prelude::*, tasks::executor::TaskExecutor};
+
+static LOGGER: KernelLogger = KernelLogger;
 
 pub fn main(boot_info: &'static mut BootInfo) -> ! {
     // Initialize memory
@@ -29,10 +31,17 @@ pub fn main(boot_info: &'static mut BootInfo) -> ! {
     crate::platform::pre_init_platform();
 
     // Initialize device drivers
-    let framebuffer = boot_info.framebuffer.as_mut().expect("Failed to adquire screen framebuffer.");
+    let framebuffer = boot_info
+        .framebuffer
+        .as_mut()
+        .expect("Failed to adquire screen framebuffer.");
     crate::framebuffer::init(framebuffer);
 
-    println!("Starting Kernel");
+    log::set_logger(&KernelLogger)
+        .map(|()| log::set_max_level(LevelFilter::Info))
+        .expect("Failed to initialize logger");
+
+    info!("Starting Kernel");
 
     // Initialize platform specifics
     crate::platform::init_platform();

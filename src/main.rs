@@ -31,6 +31,7 @@
 #![no_main]
 
 mod framebuffer;
+mod log;
 mod memory;
 mod panic;
 mod platform;
