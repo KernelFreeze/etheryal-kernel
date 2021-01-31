@@ -23,12 +23,12 @@ pub fn main(boot_info: &'static mut BootInfo) -> ! {
     let memory_offset = boot_info
         .physical_memory_offset
         .into_option()
-        .expect("Failed to map virtual memory address. The bootloader didn't provide a memory offset");
+        .expect("Failed to map virtual memory address.");
     let memory_regions = &mut boot_info.memory_regions;
     crate::memory::allocator::init(memory_regions, memory_offset);
 
     // Pre-Initialize platform specifics
-    crate::platform::pre_init_platform();
+    crate::platform::pre_init();
 
     // Initialize device drivers
     let framebuffer = boot_info
@@ -44,7 +44,7 @@ pub fn main(boot_info: &'static mut BootInfo) -> ! {
     info!("Starting Kernel");
 
     // Initialize platform specifics
-    crate::platform::init_platform();
+    crate::platform::init();
 
     #[cfg(test)]
     crate::test_main();

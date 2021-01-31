@@ -16,8 +16,8 @@ use core::panic::PanicInfo;
 
 use crate::prelude::*;
 
-#[panic_handler]
 #[cfg(not(test))]
+#[panic_handler]
 fn panic(info: &PanicInfo) -> ! {
     error!("Kernel panic!");
     error!("{}", info);

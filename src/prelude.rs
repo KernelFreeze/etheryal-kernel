@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-pub use alloc::{prelude::v1::*, vec};
+pub use alloc::{format, prelude::v1::*, vec};
 pub use core::borrow::Borrow;
 
 pub use log::*;

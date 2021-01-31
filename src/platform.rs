@@ -18,14 +18,14 @@ pub mod halt;
 mod x86_64;
 
 #[cfg(target_arch = "x86_64")]
-pub fn init_platform() {
+pub fn init() {
     unsafe {
         x86_64::init();
     }
 }
 
 #[cfg(target_arch = "x86_64")]
-pub fn pre_init_platform() {
+pub fn pre_init() {
     x86_64::pre_init();
 }
 
