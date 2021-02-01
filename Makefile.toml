@@ -7,6 +7,21 @@ install_crate = { rustup_component_name = "llvm-tools-preview" }
 [tasks.install-rust-src]
 install_crate = { rustup_component_name = "rust-src" }
 
+[tasks.install-clippy]
+install_crate = { rustup_component_name = "clippy" }
+
+[tasks.clippy]
+description = "Runs clippy checks."
+category = "Build"
+command = "cargo"
+args = ["clippy", "--color", "always", "--all-targets", "--all-features", "--", "-D","warnings"]
+dependencies = ["install-clippy"]
+
+[tasks.fmt-check]
+install_crate = { rustup_component_name = "rustfmt-preview", binary = "rustfmt", test_arg = "--help" }
+command = "cargo"
+args = ["fmt", "--", "--color", "always", "--check"]
+
 [tasks.build]
 description = "Runs the rust compiler."
 category = "Build"
@@ -15,7 +30,7 @@ args = ["build"]
 dependencies = ["install-llvm-tools-preview", "install-rust-src"]
 
 [tasks.build-release]
-description = "Runs the rust compiler."
+description = "Runs the rust compiler on release mode."
 category = "Build"
 command = "cargo"
 args = ["build", "--release"]
@@ -28,8 +43,14 @@ command = "etheryal-bootimage"
 args = ["--out", "out", "--build-cmd", "make build-release", "--create-out", "build"]
 dependencies = ["install-llvm-tools-preview", "install-rust-src"]
 
+[tasks.test]
+description = "Tests etheryal kernel."
+category = "Build"
+command = "etheryal-bootimage"
+args = ["--out", "out", "--build-cmd", "make build-release", "--create-out", "test"]
+
 [tasks.dev-test-flow]
-dependencies = ["format", "clippy"]
+dependencies = ["format", "clippy", "build"]
 
 [tasks.build-flow]
 dependencies = ["format", "build-release"]
