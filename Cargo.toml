@@ -1,8 +1,15 @@
 [package]
-name = "kernel"
+name = "etheryal-kernel"
 version = "0.1.0"
 authors = ["KernelFreeze <kernelfreeze@outlook.com>"]
 edition = "2018"
+build = "build.rs"
+
+[lib]
+crate-type = ["bin"]
+
+[build-dependencies]
+built = { version = "0.4", features = ["git2"] }
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 

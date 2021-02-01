@@ -14,5 +14,22 @@ command = "cargo"
 args = ["build"]
 dependencies = ["install-llvm-tools-preview", "install-rust-src"]
 
+[tasks.build-release]
+description = "Runs the rust compiler."
+category = "Build"
+command = "cargo"
+args = ["build", "--release"]
+dependencies = ["install-llvm-tools-preview", "install-rust-src"]
+
+[tasks.build-image]
+description = "Runs etheryal bootimage."
+category = "Build"
+command = "etheryal-bootimage"
+args = ["--out", "out", "--build-cmd", "make build-release", "--create-out", "build"]
+dependencies = ["install-llvm-tools-preview", "install-rust-src"]
+
 [tasks.dev-test-flow]
 dependencies = ["format", "clippy"]
+
+[tasks.build-flow]
+dependencies = ["format", "build-release"]

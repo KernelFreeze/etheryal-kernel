@@ -47,3 +47,11 @@ mod wasm;
 bootloader::entry_point!(startup::main);
 
 extern crate alloc;
+
+pub mod build_info {
+    core::include!(concat!(env!("OUT_DIR"), "/built.rs"));
+
+    pub fn release_is_unstable() -> bool {
+        return !PKG_VERSION_PRE.is_empty() || !GIT_VERSION.is_some();
+    }
+}
