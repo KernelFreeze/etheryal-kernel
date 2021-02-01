@@ -1,6 +1,17 @@
 [env]
 RUST_COMPILER_RT_ROOT = "${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/libs/compiler-rt"
 
+[tasks.download-compiler-rt]
+install_script = '''
+if [ ! -d "libs/compiler-rt/" ] 
+then
+    echo "Downloading LLVM's compiler RT."
+    mkdir -p libs/compiler-rt/
+    cd libs/compiler-rt/
+    curl -L https://github.com/llvm/llvm-project/tarball/llvmorg-11.0.1 | tar xz --wildcards "*/compiler-rt/*" --strip-components=2
+fi
+'''
+
 [tasks.install-llvm-tools-preview]
 install_crate = { rustup_component_name = "llvm-tools-preview" }
 
@@ -15,7 +26,7 @@ description = "Runs clippy checks."
 category = "Build"
 command = "cargo"
 args = ["clippy", "--color", "always", "--all-targets", "--all-features", "--", "-D","warnings"]
-dependencies = ["install-clippy"]
+dependencies = ["download-compiler-rt", "install-llvm-tools-preview", "install-rust-src", "install-clippy"]
 
 [tasks.fmt-check]
 install_crate = { rustup_component_name = "rustfmt-preview", binary = "rustfmt", test_arg = "--help" }
@@ -27,21 +38,20 @@ description = "Runs the rust compiler."
 category = "Build"
 command = "cargo"
 args = ["build"]
-dependencies = ["install-llvm-tools-preview", "install-rust-src"]
+dependencies = ["download-compiler-rt","install-llvm-tools-preview", "install-rust-src"]
 
 [tasks.build-release]
 description = "Runs the rust compiler on release mode."
 category = "Build"
 command = "cargo"
 args = ["build", "--release"]
-dependencies = ["install-llvm-tools-preview", "install-rust-src"]
+dependencies = ["download-compiler-rt", "install-llvm-tools-preview", "install-rust-src"]
 
 [tasks.build-image]
 description = "Runs etheryal bootimage."
 category = "Build"
 command = "etheryal-bootimage"
 args = ["--out", "out", "--build-cmd", "make build-release", "--create-out", "build"]
-dependencies = ["install-llvm-tools-preview", "install-rust-src"]
 
 [tasks.test]
 description = "Tests etheryal kernel."
