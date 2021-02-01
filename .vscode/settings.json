@@ -2,5 +2,11 @@
     "git.ignoreLimitWarning": true,
     "files.watcherExclude": {
         "**/target/**": true
-    }
+    },
+    "cSpell.words": [
+        "UEFI",
+        "booteable",
+        "bootimage",
+        "etheryal"
+    ]
 }
