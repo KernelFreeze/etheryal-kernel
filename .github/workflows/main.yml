@@ -27,8 +27,8 @@ jobs:
     name: build booteable image
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-    - name: Install tools
+      - uses: actions/checkout@v2
+      - name: Install tools
         run: |
           rustup set profile minimal
           rustup toolchain update nightly --no-self-update
@@ -38,5 +38,5 @@ jobs:
           cargo --version
           cargo make --version
           etheryal-bootimage --version
-    - name: Build image
-      run: cargo make build-image --verbose
+      - name: Build image
+        run: cargo make build-image --verbose
