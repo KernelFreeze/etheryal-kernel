@@ -1,3 +1,5 @@
+![GitHub Workflow Status](https://img.shields.io/github/workflow/status/etheryal/etheryal-kernel/Build)
+
 # 😳 etheryal Kernel
 
 etheryal Kernel is an Open Source capability-based Kernel written in Rust programming language. Uses a new design based on Webassembly System Interface, containerizing drivers and user-space applications in a safe sandbox.
