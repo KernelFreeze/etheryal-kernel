@@ -14,8 +14,8 @@ jobs:
       - name: Install tools
         run: |
           rustup set profile minimal
-          rustup toolchain update nightly --no-self-update
-          rustup default nightly
+          rustup toolchain update nightly-2021-01-26 --no-self-update
+          rustup default nightly-2021-01-26
           rustup component add rustfmt-preview clippy
           rustup show
           cargo --version
