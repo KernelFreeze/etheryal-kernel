@@ -2,5 +2,6 @@
     "cSpell.words": [
         "Framebuffer",
         "typenum"
-    ]
+    ],
+    "git.ignoreLimitWarning": true
 }

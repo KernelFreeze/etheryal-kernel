@@ -1,3 +1,6 @@
+[env]
+RUST_COMPILER_RT_ROOT = "${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/libs/compiler-rt"
+
 [tasks.install-llvm-tools-preview]
 install_crate = { rustup_component_name = "llvm-tools-preview" }
 

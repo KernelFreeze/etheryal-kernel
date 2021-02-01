@@ -15,9 +15,8 @@ futures = { version = "0.3", default-features = false }
 buddy_system_allocator = "0.6.0"
 bitflags = "1.2.1"
 core_detect = "0.1.0"
-bare-io = { version = "0.2", default-features = false, features = ["alloc", "nightly"] }
 log = { version = "0.4.14", default-features = false }
-anyhow = { version = "1.0", default-features = false }
+libm = "0.2.1"
 
 [target.'cfg(target_arch = "x86_64")'.dependencies]
 x86_64 = { version = "0.13.1" }
@@ -35,32 +34,7 @@ version = "1.6.1"
 default-features = false
 features = ["union", "const_generics", "specialization", "may_dangle"]
 
-[dependencies.wain-exec]
-git = "https://github.com/etheryal/wain"
-branch = "main"
-default-features = false
-features = ["core"]
-
-[dependencies.wain-validate]
-git = "https://github.com/etheryal/wain"
-branch = "main"
-default-features = false
-features = ["core"]
-
-[dependencies.wain-syntax-binary]
-git = "https://github.com/etheryal/wain"
-branch = "main"
-default-features = false
-features = ["core"]
-
-[dependencies.wain-syntax-text]
-git = "https://github.com/etheryal/wain"
-branch = "main"
-default-features = false
-features = ["core"]
-
-[dependencies.wain-ast]
-git = "https://github.com/etheryal/wain"
-branch = "main"
+[dependencies.wasmi]
+git = "https://github.com/etheryal/wasmi"
 default-features = false
 features = ["core"]

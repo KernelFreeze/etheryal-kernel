@@ -1,62 +1,49 @@
-// Copyright 2021 Miguel Peláez <kernelfreeze@outlook.com>
+// Copyright (c) 2021 Miguel Peláez
 //
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
 //
-//     http://www.apache.org/licenses/LICENSE-2.0
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
 //
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
 
-use anyhow::{Error, Result};
-use bare_io::{Read, Write};
-use wain_exec::Runtime;
+mod modules;
 
-use self::importer::DefaultImporter;
-use crate::prelude::*;
+use log::info;
+use wasmi::{ImportsBuilder, Module, ModuleInstance, NopExternals, RuntimeValue};
 
-mod importer;
+use self::modules::wasi::WasiImportResolver;
 
-pub async fn load_binary_program<R: Read, W: Write>(source: &[u8], stdin: R, stdout: W) -> Result<()> {
-    let tree = wain_syntax_binary::parse(&source)
-        .map_err(|e| format!("Failed to parse binary. Error: {:?}", e))
-        .map_err(Error::msg)?;
+/// Run a Webassembly program
+// source: &[u8]
+pub async fn run_binary_program() {
+    let source = include_bytes!("test.wasm");
+    let module = Module::from_buffer(source).unwrap();
+    let mut import_resolver = ImportsBuilder::default();
 
-    wain_validate::validate(&tree)
-        .map_err(|e| format!("Failed to validate binary. Error: {:?}", e))
-        .map_err(Error::msg)?;
+    let wasi_resolver = WasiImportResolver::new();
+    import_resolver.push_resolver("wasi_snapshot_preview1", &wasi_resolver);
 
-    let importer = DefaultImporter::with_stdio(stdin, stdout);
+    let main = ModuleInstance::new(&module, &import_resolver)
+        .expect("Failed to instantiate module")
+        .async_run_start(&mut NopExternals, 10)
+        .await
+        .expect("Failed to run start function in module");
 
-    if let Ok(mut runtime) = Runtime::instantiate(&tree.module, importer) {
-        if runtime.module().entrypoint.is_none() {
-            runtime.invoke("_start", &[]).map_err(Error::msg)?;
-        }
-    }
-
-    Ok(())
-}
-
-pub async fn load_text_program<R: Read, W: Write>(source: &str, stdin: R, stdout: W) -> Result<()> {
-    let tree = wain_syntax_text::parse(&source)
-        .map_err(|e| format!("Failed to parse binary. Error: {:?}", e))
-        .map_err(Error::msg)?;
-
-    wain_validate::validate(&tree)
-        .map_err(|e| format!("Failed to validate binary. Error: {:?}", e))
-        .map_err(Error::msg)?;
-
-    let importer = DefaultImporter::with_stdio(stdin, stdout);
-
-    if let Ok(mut runtime) = Runtime::instantiate(&tree.module, importer) {
-        if runtime.module().entrypoint.is_none() {
-            runtime.invoke("_start", &[]).map_err(Error::msg)?;
-        }
-    }
-
-    Ok(())
+    info!(
+        "Result: {:?}",
+        main.async_invoke_export("_call", &[RuntimeValue::I32(0i32)], &mut NopExternals, 10)
+            .await
+    );
 }
