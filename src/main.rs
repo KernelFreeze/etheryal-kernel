@@ -35,7 +35,6 @@
 mod framebuffer;
 mod log;
 mod math;
-mod mem;
 mod memory;
 mod panic;
 mod platform;

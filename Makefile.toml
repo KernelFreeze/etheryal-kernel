@@ -7,12 +7,6 @@ install_crate = { rustup_component_name = "llvm-tools-preview" }
 [tasks.install-rust-src]
 install_crate = { rustup_component_name = "rust-src" }
 
-[tasks.b]
-alias = "build"
-
-[tasks.t]
-alias = "test"
-
 [tasks.build]
 description = "Runs the rust compiler."
 category = "Build"

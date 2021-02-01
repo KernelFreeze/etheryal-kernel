@@ -20,7 +20,7 @@
 
 use alloc::collections::BTreeMap;
 use alloc::sync::Arc;
-use core::task::{Context, Poll, Waker};
+use core::task::{Context, Waker};
 
 use crossbeam_queue::SegQueue;
 use futures::Future;
@@ -76,10 +76,10 @@ impl TaskExecutor {
 
             let waker = waker_cache
                 .entry(task_id)
-                .or_insert_with(|| TaskWaker::new(task_id, task_queue.clone()));
+                .or_insert_with(|| TaskWaker::task_waker(task_id, task_queue.clone()));
             let mut context = Context::from_waker(waker);
 
-            if let Poll::Ready(_) = task.poll(&mut context) {
+            if task.poll(&mut context).is_ready() {
                 // task done -> remove it and its cached waker
                 tasks.remove(&task_id);
                 waker_cache.remove(&task_id);
