@@ -7,7 +7,25 @@ env:
 
 jobs:
   linter:
-    name: clippy and rustfmt
+    name: Check Linter
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install tools
+        run: |
+          rustup set profile minimal
+          rustup toolchain update nightly --no-self-update
+          rustup default nightly
+          rustup component add clippy
+          cargo install --force cargo-make
+          rustup show
+          cargo --version
+          cargo make --version
+          cargo --version
+          cargo clippy --version
+      - run: cargo make clippy
+  format:
+    name: Check Format
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -16,16 +34,14 @@ jobs:
           rustup set profile minimal
           rustup toolchain update nightly-2021-01-26 --no-self-update
           rustup default nightly-2021-01-26
-          rustup component add rustfmt-preview clippy
+          rustup component add rustfmt-preview
           cargo install --force cargo-make
           rustup show
           cargo --version
           cargo make --version
           cargo --version
           cargo fmt --version
-          cargo clippy --version
       - run: cargo make fmt-check
-      - run: cargo make clippy
   build-image:
     name: build booteable image
     runs-on: ubuntu-latest
@@ -42,5 +58,9 @@ jobs:
           cargo --version
           cargo make --version
           etheryal-bootimage --version
+      - name: Install QEMU
+        run: |
+          sudo apt update
+          sudo apt install qemu-system-x86
       - name: Build image
         run: cargo make build-image --verbose

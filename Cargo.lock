@@ -234,9 +234,9 @@ dependencies = [
 
 [[package]]
 name = "libc"
-version = "0.2.84"
+version = "0.2.85"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1cca32fa0182e8c0989459524dc356b8f2b5c10f1b9eb521b7d182c03cf8c5ff"
+checksum = "7ccac4b00700875e6a07c6cde370d44d32fa01c5a65cdd2fca6858c479d28bb3"
 
 [[package]]
 name = "libgit2-sys"
@@ -522,9 +522,9 @@ dependencies = [
 
 [[package]]
 name = "x86_64"
-version = "0.13.1"
+version = "0.13.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5d74944372d63f31dd39fce1ef8036143484ff4cd4efcd743ef50135839de4e7"
+checksum = "b871116e3c83dad0795580b10b2b1dd05cb52ec719af36180371877b09681f7f"
 dependencies = [
  "bit_field",
  "bitflags",
