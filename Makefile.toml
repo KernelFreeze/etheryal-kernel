@@ -53,6 +53,12 @@ category = "Build"
 command = "etheryal-bootimage"
 args = ["--out", "out", "--build-cmd", "make build-release", "--create-out", "build"]
 
+[tasks.run-qemu]
+description = "Runs etheryal bootimage, and start qemu emulator."
+category = "Build"
+command = "etheryal-bootimage"
+args = ["--out", "out", "--build-cmd", "make build-release", "--create-out", "run"]
+
 [tasks.test]
 description = "Tests etheryal kernel."
 category = "Build"

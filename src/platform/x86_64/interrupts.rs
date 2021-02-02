@@ -38,6 +38,10 @@ static IDT: Lazy<InterruptDescriptorTable> = Lazy::new(|| {
 
     idt.breakpoint.set_handler_fn(breakpoint_handler);
     idt.page_fault.set_handler_fn(page_fault_handler);
+    idt.divide_error.set_handler_fn(divide_error_handler);
+    idt.simd_floating_point
+        .set_handler_fn(simd_floating_point_handler);
+    idt.invalid_opcode.set_handler_fn(invalid_opcode_handler);
     idt
 });
 
@@ -45,12 +49,29 @@ pub fn init_idt() {
     IDT.load();
 }
 
+extern "x86-interrupt" fn divide_error_handler(stack_frame: &mut InterruptStackFrame) {
+    warn!("DIVIDE ERROR:\n{:#?}", stack_frame);
+    panic!()
+}
+
+extern "x86-interrupt" fn simd_floating_point_handler(stack_frame: &mut InterruptStackFrame) {
+    warn!("FAILED SIMD OPERATION:\n{:#?}", stack_frame);
+    panic!()
+}
+
+extern "x86-interrupt" fn invalid_opcode_handler(stack_frame: &mut InterruptStackFrame) {
+    warn!("INVALID OPERATION:\n{:#?}", stack_frame);
+    panic!()
+}
+
 extern "x86-interrupt" fn breakpoint_handler(stack_frame: &mut InterruptStackFrame) {
     warn!("BREAKPOINT:\n{:#?}", stack_frame);
 }
 
-extern "x86-interrupt" fn double_fault_handler(stack_frame: &mut InterruptStackFrame, _error_code: u64) -> ! {
-    panic!("DOUBLE FAULT:\n{:#?}", stack_frame);
+extern "x86-interrupt" fn double_fault_handler(stack_frame: &mut InterruptStackFrame, error_code: u64) -> ! {
+    error!("DOUBLE FAULT:\n{:#?}", stack_frame);
+    error!("Error Code: {}", error_code);
+    panic!()
 }
 
 extern "x86-interrupt" fn page_fault_handler(

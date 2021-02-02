@@ -30,6 +30,7 @@ x86_64 = { version = "0.13" }
 
 [package.metadata.bootloader]
 map-physical-memory = true
+kernel-stack-size = "245760"
 
 [dependencies.crossbeam-queue]
 version = "0.3"

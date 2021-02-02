@@ -36,7 +36,9 @@ pub fn main(boot_info: &'static mut BootInfo) -> ! {
     crate::memory::allocator::init(memory_regions, memory_offset);
 
     // Pre-Initialize platform specifics
-    crate::platform::pre_init();
+    unsafe {
+        crate::platform::pre_init();
+    }
 
     // Initialize device drivers
     let framebuffer = boot_info
@@ -52,13 +54,15 @@ pub fn main(boot_info: &'static mut BootInfo) -> ! {
     info!("Starting Kernel");
 
     // Initialize platform specifics
-    crate::platform::init();
+    unsafe {
+        crate::platform::init();
+    }
 
     #[cfg(test)]
     crate::test_main();
 
     // Start task scheduler
     let mut task_executor = TaskExecutor::new();
-    task_executor.spawn(crate::wasm::run_binary_program());
+    task_executor.spawn(async { crate::wasm::run_binary_program(&[]).await.unwrap() });
     task_executor.run();
 }

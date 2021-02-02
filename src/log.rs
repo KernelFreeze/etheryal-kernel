@@ -43,7 +43,7 @@ impl log::Log for KernelLogger {
 
     fn log(&self, record: &Record) {
         if self.enabled(record.metadata()) {
-            print(format_args!("{} - {}", record.level(), record.args()));
+            print(format_args!("{} - {}\n", record.level(), record.args()));
         }
     }
 

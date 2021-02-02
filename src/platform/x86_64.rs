@@ -27,7 +27,6 @@ use self::registers::control::{Xcr0, Xcr0Flags};
 pub(super) mod apic;
 pub(super) mod gdt;
 pub(super) mod interrupts;
-pub(super) mod memory;
 pub(super) mod registers;
 
 /// Enable SIMD
@@ -46,7 +45,7 @@ unsafe fn enable_simd() {
     }
 }
 
-pub fn pre_init() {}
+pub unsafe fn pre_init() {}
 
 pub unsafe fn init() {
     // Initialize Global Descriptor Table

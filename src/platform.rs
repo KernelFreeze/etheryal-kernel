@@ -21,7 +21,6 @@
 // SOFTWARE.
 
 pub mod halt;
-pub mod memory;
 
 mod software;
 
@@ -38,14 +37,12 @@ mod arm;
 mod riscv32imac;
 
 #[cfg(target_arch = "x86_64")]
-pub fn init() {
-    unsafe {
-        x86_64::init();
-    }
+pub unsafe fn init() {
+    x86_64::init();
 }
 
 #[cfg(target_arch = "x86_64")]
-pub fn pre_init() {
+pub unsafe fn pre_init() {
     x86_64::pre_init();
 }
 

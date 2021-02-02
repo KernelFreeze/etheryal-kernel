@@ -1,1 +1,0 @@
-- Make sure to give a clear scope to locks. Locking may cause deadlocks anywhere in the program.

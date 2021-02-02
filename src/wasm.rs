@@ -22,30 +22,21 @@
 
 mod modules;
 
-use log::info;
-use wasmi::{ImportsBuilder, Module, ModuleInstance, NopExternals, RuntimeValue};
+use wasmi::{Error, ImportsBuilder, Module, ModuleInstance, NopExternals};
 
 use self::modules::wasi::WasiImportResolver;
 
 /// Run a Webassembly program
-// source: &[u8]
-pub async fn run_binary_program() {
-    let source = include_bytes!("test.wasm");
-    let module = Module::from_buffer(source).unwrap();
+pub async fn run_binary_program(buff: &[u8]) -> Result<(), Error> {
+    let module = Module::from_buffer(buff)?;
     let mut import_resolver = ImportsBuilder::default();
 
+    // Setup default modules
     let wasi_resolver = WasiImportResolver::new();
     import_resolver.push_resolver("wasi_snapshot_preview1", &wasi_resolver);
 
-    let main = ModuleInstance::new(&module, &import_resolver)
-        .expect("Failed to instantiate module")
+    ModuleInstance::new(&module, &import_resolver)?
         .async_run_start(&mut NopExternals, 10)
-        .await
-        .expect("Failed to run start function in module");
-
-    info!(
-        "Result: {:?}",
-        main.async_invoke_export("_call", &[RuntimeValue::I32(0i32)], &mut NopExternals, 10)
-            .await
-    );
+        .await?;
+    Ok(())
 }

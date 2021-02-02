@@ -23,5 +23,3 @@
 //! Sofware implementations of platform specifics
 
 pub mod math;
-#[cfg(not(target_arch = "x86_64"))]
-pub mod memory;
