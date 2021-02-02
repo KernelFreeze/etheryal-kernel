@@ -17,7 +17,10 @@ jobs:
           rustup toolchain update nightly-2021-01-26 --no-self-update
           rustup default nightly-2021-01-26
           rustup component add rustfmt-preview clippy
+          cargo install --force cargo-make
           rustup show
+          cargo --version
+          cargo make --version
           cargo --version
           cargo fmt --version
           cargo clippy --version

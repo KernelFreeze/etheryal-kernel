@@ -2,6 +2,7 @@
 ![Libraries.io dependency status for GitHub repo](https://img.shields.io/librariesio/github/etheryal/etheryal-kernel?style=flat-square)
 [![Discord](https://img.shields.io/discord/805182661348818965?style=flat-square)](https://discord.gg/dsY99BV2PT)
 ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/etheryal/etheryal-kernel?style=flat-square)
+![Lines of code](https://img.shields.io/tokei/lines/github/etheryal/etheryal-kernel?style=flat-square)
 
 ![GitHub Repo stars](https://img.shields.io/github/stars/etheryal/etheryal-kernel?style=social)
 ![GitHub watchers](https://img.shields.io/github/watchers/etheryal/etheryal-kernel?style=social)
