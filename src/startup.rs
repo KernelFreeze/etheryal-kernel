@@ -31,6 +31,8 @@ pub fn main(boot_info: &'static mut BootInfo) -> ! {
     init_framebuffer(boot_info);
     init_logger();
 
+    display_kernel_info();
+
     unsafe {
         crate::platform::pre_init();
         crate::platform::init();
@@ -54,7 +56,8 @@ fn init_scheduler() -> ! {
     use crate::tasks::executor::TaskExecutor;
 
     let mut task_executor = TaskExecutor::new();
-    task_executor.spawn(async { crate::wasm::run_binary_program(&[]).await.unwrap() });
+    // task_executor.spawn(async {
+    // crate::wasm::run_binary_program(&[]).await.unwrap() });
     task_executor.run();
 }
 
@@ -86,4 +89,16 @@ fn init_logger() {
     log::set_logger(&KernelLogger)
         .map(|()| log::set_max_level(LevelFilter::Info))
         .expect("Failed to initialize logger");
+}
+
+fn display_kernel_info() {
+    use crate::build_info;
+
+    if let Some(git_version) = build_info::GIT_VERSION {
+        info!("etheryal kernel git-build {}", git_version);
+    } else {
+        info!("etheryal kernel v{}", build_info::PKG_VERSION);
+    }
+
+    info!("build with rustc {}", build_info::RUSTC_VERSION);
 }

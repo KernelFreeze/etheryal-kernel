@@ -1,6 +1,6 @@
-![GitHub Workflow Status](https://img.shields.io/github/workflow/status/etheryal/etheryal-kernel/Build)
-[![Discord](https://img.shields.io/discord/805182661348818965?style=flat-square)](https://discord.gg/dsY99BV2PT)
-![Lines of code](https://tokei.rs/b1/github/etheryal/etheryal-kernel?category=code)
+[![GitHub Workflow Status](https://img.shields.io/github/workflow/status/etheryal/etheryal-kernel/Build)](https://github.com/etheryal/etheryal-kernel/actions)
+[![Discord](https://img.shields.io/discord/805182661348818965)](https://discord.gg/dsY99BV2PT)
+[![Lines of code](https://tokei.rs/b1/github/etheryal/etheryal-kernel?category=code)](https://github.com/XAMPPRocky/tokei)
 
 # 😳 etheryal Kernel
 

@@ -17,6 +17,7 @@
         "memmove",
         "memset",
         "microkernel",
-        "microkernels"
+        "microkernels",
+        "rustc"
     ]
 }
