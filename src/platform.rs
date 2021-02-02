@@ -1,4 +1,6 @@
-// Copyright (c) 2021 Miguel Peláez
+// MIT License
+//
+// Copyright (c) 2021 The etheryal Project Developers
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -19,9 +21,21 @@
 // SOFTWARE.
 
 pub mod halt;
+pub mod memory;
+
+mod software;
 
 #[cfg(target_arch = "x86_64")]
 mod x86_64;
+
+#[cfg(target_arch = "aarch64")]
+mod aarch64;
+
+#[cfg(target_arch = "arm")]
+mod arm;
+
+#[cfg(target_arch = "riscv32imac")]
+mod riscv32imac;
 
 #[cfg(target_arch = "x86_64")]
 pub fn init() {

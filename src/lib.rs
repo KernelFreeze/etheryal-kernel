@@ -1,4 +1,6 @@
-// Copyright (c) 2021 Miguel Peláez
+// MIT License
+//
+// Copyright (c) 2021 The etheryal Project Developers
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -34,7 +36,6 @@
 
 mod framebuffer;
 mod log;
-mod math;
 mod memory;
 mod panic;
 mod platform;

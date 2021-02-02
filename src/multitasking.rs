@@ -1,4 +1,4 @@
-// Copyright 2021 Miguel Peláez <kernelfreeze@outlook.com>
+// Copyright 2021 The etheryal Project Developers <kernelfreeze@outlook.com>
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.

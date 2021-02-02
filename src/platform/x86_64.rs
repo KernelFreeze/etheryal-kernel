@@ -1,4 +1,6 @@
-// Copyright (c) 2021 Miguel Peláez
+// MIT License
+//
+// Copyright (c) 2021 The etheryal Project Developers
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -22,10 +24,11 @@ use x86_64::registers::control::{Cr0, Cr0Flags, Cr4, Cr4Flags};
 
 use self::registers::control::{Xcr0, Xcr0Flags};
 
-mod apic;
-mod gdt;
-mod interrupts;
-mod registers;
+pub(super) mod apic;
+pub(super) mod gdt;
+pub(super) mod interrupts;
+pub(super) mod memory;
+pub(super) mod registers;
 
 /// Enable SIMD
 ///

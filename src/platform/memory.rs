@@ -20,19 +20,38 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-use bootloader::memory_region::{MemoryRegion, MemoryRegionKind};
-use buddy_system_allocator::LockedHeap;
+#[cfg(target_pointer_width = "16")]
+type CInt = i16;
 
-#[global_allocator]
-static ALLOCATOR: LockedHeap = LockedHeap::empty();
+#[cfg(not(target_pointer_width = "16"))]
+type CInt = i32;
 
-pub fn init(memory_regions: &'static mut [MemoryRegion], offset: u64) {
-    let mut allocator = ALLOCATOR.lock();
+#[cfg(target_arch = "x86_64")]
+pub unsafe fn copy_memory(dest: *mut u8, src: *const u8, n: usize) -> *mut u8 {
+    super::x86_64::memory::copy_memory(dest, src, n)
+}
 
-    memory_regions
-        .iter()
-        .filter(|r| r.kind == MemoryRegionKind::Usable)
-        .for_each(|region| unsafe {
-            allocator.add_to_heap((region.start + offset) as usize, (region.end + offset) as usize)
-        });
+#[cfg(not(target_arch = "x86_64"))]
+pub unsafe fn copy_memory(dest: *mut u8, src: *const u8, n: usize) -> *mut u8 {
+    super::software::memory::copy_memory(dest, src, n)
+}
+
+#[cfg(target_arch = "x86_64")]
+pub unsafe fn overlapping_copy_memory(dest: *mut u8, src: *const u8, n: usize) -> *mut u8 {
+    super::x86_64::memory::overlapping_copy_memory(dest, src, n)
+}
+
+#[cfg(not(target_arch = "x86_64"))]
+pub unsafe fn overlapping_copy_memory(dest: *mut u8, src: *const u8, n: usize) -> *mut u8 {
+    super::x86_64::memory::overlapping_copy_memory(dest, src, n)
+}
+
+#[cfg(target_arch = "x86_64")]
+pub unsafe fn set_bytes(dest: *mut u8, c: CInt, n: usize) {
+    super::x86_64::memory::set_bytes(dest, c as u8, n)
+}
+
+#[cfg(not(target_arch = "x86_64"))]
+pub unsafe fn set_bytes(dest: *mut u8, c: CInt, n: usize) -> *mut u8 {
+    super::x86_64::memory::set_bytes(dest, src, n)
 }

@@ -20,8 +20,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-pub use alloc::prelude::v1::*;
-pub use alloc::{format, vec};
-pub use core::borrow::Borrow;
+//! Sofware implementations of platform specifics
 
-pub use log::*;
+pub mod math;
+#[cfg(not(target_arch = "x86_64"))]
+pub mod memory;
