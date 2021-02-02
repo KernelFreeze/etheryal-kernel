@@ -14,7 +14,7 @@ built = { version = "0.4", features = ["git2"] }
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-bootloader = { git = "https://github.com/rust-osdev/bootloader", branch = "uefi" }
+bootloader = { git = "https://github.com/etheryal/bootloader", branch = "uefi" }
 volatile = { version = "0.4", features = ["unstable"] }
 font8x8 = { version = "0.2", default-features = false, features = ["unicode"] }
 spin = { version = "0.7", features = ["ticket_mutex"] }

@@ -21,7 +21,7 @@ checksum = "cf1de2fe8c75bc145a2f577add951f8134889b4795d47466a54a5c846d691693"
 [[package]]
 name = "bootloader"
 version = "0.10.0-alpha-01"
-source = "git+https://github.com/rust-osdev/bootloader?branch=uefi#3c80c4137fcd052d06de6794d469646388d825df"
+source = "git+https://github.com/etheryal/bootloader?branch=uefi#cc01ad1290f32f58225890b17835180d7d406092"
 
 [[package]]
 name = "buddy_system_allocator"
