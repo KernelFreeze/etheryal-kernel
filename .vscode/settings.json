@@ -4,7 +4,9 @@
         "**/target/**": true
     },
     "cSpell.words": [
+        "QEMU",
         "UEFI",
+        "WASM",
         "booteable",
         "bootimage",
         "bootloader",
@@ -13,6 +15,8 @@
         "memcmp",
         "memcpy",
         "memmove",
-        "memset"
+        "memset",
+        "microkernel",
+        "microkernels"
     ]
 }
