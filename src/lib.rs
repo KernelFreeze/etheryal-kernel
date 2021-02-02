@@ -20,6 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+#![allow(dead_code)]
 #![feature(abi_x86_interrupt)]
 #![feature(custom_test_frameworks)]
 #![feature(default_alloc_error_handler)]

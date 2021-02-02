@@ -26,7 +26,7 @@ use buddy_system_allocator::LockedHeap;
 #[global_allocator]
 static ALLOCATOR: LockedHeap = LockedHeap::empty();
 
-pub fn init(memory_regions: &'static mut [MemoryRegion], offset: u64) {
+pub fn init(memory_regions: &mut [MemoryRegion], offset: u64) {
     let mut allocator = ALLOCATOR.lock();
 
     memory_regions

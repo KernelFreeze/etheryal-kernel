@@ -22,7 +22,7 @@
 
 use core::fmt;
 
-use bootloader::boot_info::{FrameBuffer, PixelFormat};
+use bootloader::boot_info::{FrameBuffer, FrameBufferInfo, PixelFormat};
 use font8x8::UnicodeFonts;
 use spin::Mutex;
 use volatile::Volatile;
@@ -30,30 +30,34 @@ use volatile::Volatile;
 const OFFSET: usize = 16;
 const CHARACTER_SPACE: usize = 8;
 
-pub static WRITER: Mutex<Option<Writer>> = Mutex::new(None);
+pub static WRITER: Mutex<Option<FramebufferWriter>> = Mutex::new(None);
 
-pub fn init(framebuffer: &'static mut FrameBuffer) {
-    let mut writer = Writer {
-        info: framebuffer.info(),
-        buffer: Volatile::new(framebuffer.buffer_mut()),
-        x_pos: 0,
-        y_pos: 0,
-    };
-    writer.clear();
-
+pub fn init(writer: FramebufferWriter<'static>) {
     let mut global_writer = WRITER.try_lock().unwrap();
     assert!(global_writer.is_none(), "Global writer already initialized");
     *global_writer = Some(writer);
 }
 
-pub struct Writer {
-    buffer: Volatile<&'static mut [u8]>,
-    info: bootloader::boot_info::FrameBufferInfo,
+pub struct FramebufferWriter<'a> {
+    buffer: Volatile<&'a mut [u8]>,
+    info: FrameBufferInfo,
     x_pos: usize,
     y_pos: usize,
 }
 
-impl Writer {
+impl<'a> FramebufferWriter<'a> {
+    #[inline(always)]
+    pub fn new(framebuffer: &'a mut FrameBuffer) -> FramebufferWriter<'a> {
+        let mut writer = FramebufferWriter {
+            info: framebuffer.info(),
+            buffer: Volatile::new(framebuffer.buffer_mut()),
+            x_pos: 0,
+            y_pos: 0,
+        };
+        writer.clear();
+        writer
+    }
+
     fn newline(&mut self) {
         self.y_pos += OFFSET;
         self.carriage_return();
@@ -142,7 +146,7 @@ impl Writer {
     }
 }
 
-impl fmt::Write for Writer {
+impl fmt::Write for FramebufferWriter<'_> {
     fn write_str(&mut self, s: &str) -> fmt::Result {
         self.write_string(s);
         Ok(())

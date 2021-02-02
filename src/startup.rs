@@ -22,47 +22,68 @@
 
 use bootloader::BootInfo;
 
+use crate::framebuffer::FramebufferWriter;
 use crate::log::KernelLogger;
 use crate::prelude::*;
-use crate::tasks::executor::TaskExecutor;
 
 pub fn main(boot_info: &'static mut BootInfo) -> ! {
-    // Initialize memory
+    init_memory(boot_info);
+    init_framebuffer(boot_info);
+    init_logger();
+
+    unsafe {
+        crate::platform::pre_init();
+        crate::platform::init();
+    }
+
+    #[cfg(test)]
+    run_tests();
+
+    #[cfg(not(test))]
+    init_scheduler();
+}
+
+#[cfg(test)]
+fn run_tests() -> ! {
+    crate::test_main();
+    crate::platform::permanent_halt();
+}
+
+#[cfg(not(test))]
+fn init_scheduler() -> ! {
+    use crate::tasks::executor::TaskExecutor;
+
+    let mut task_executor = TaskExecutor::new();
+    task_executor.spawn(async { crate::wasm::run_binary_program(&[]).await.unwrap() });
+    task_executor.run();
+}
+
+#[inline(always)]
+fn init_framebuffer(boot_info: &'static mut BootInfo) {
+    use crate::framebuffer::init;
+
+    let framebuffer = boot_info
+        .framebuffer
+        .as_mut()
+        .expect("Failed to adquire screen framebuffer.");
+    init(FramebufferWriter::new(framebuffer));
+}
+
+#[inline(always)]
+fn init_memory(boot_info: &mut BootInfo) {
+    use crate::memory::allocator::init;
+
     let memory_offset = boot_info
         .physical_memory_offset
         .into_option()
         .expect("Failed to map virtual memory address.");
     let memory_regions = &mut boot_info.memory_regions;
-    crate::memory::allocator::init(memory_regions, memory_offset);
+    init(memory_regions, memory_offset);
+}
 
-    // Pre-Initialize platform specifics
-    unsafe {
-        crate::platform::pre_init();
-    }
-
-    // Initialize device drivers
-    let framebuffer = boot_info
-        .framebuffer
-        .as_mut()
-        .expect("Failed to adquire screen framebuffer.");
-    crate::framebuffer::init(framebuffer);
-
+#[inline(always)]
+fn init_logger() {
     log::set_logger(&KernelLogger)
         .map(|()| log::set_max_level(LevelFilter::Info))
         .expect("Failed to initialize logger");
-
-    info!("Starting Kernel");
-
-    // Initialize platform specifics
-    unsafe {
-        crate::platform::init();
-    }
-
-    #[cfg(test)]
-    crate::test_main();
-
-    // Start task scheduler
-    let mut task_executor = TaskExecutor::new();
-    task_executor.spawn(async { crate::wasm::run_binary_program(&[]).await.unwrap() });
-    task_executor.run();
 }

@@ -21,8 +21,13 @@
 // SOFTWARE.
 
 #[cfg(target_arch = "x86_64")]
-pub fn halt_cpu() -> ! {
+pub fn permanent_halt() -> ! {
     loop {
         x86_64::instructions::hlt();
     }
+}
+
+#[cfg(target_arch = "x86_64")]
+pub fn temporal_halt() {
+    x86_64::instructions::hlt();
 }

@@ -28,16 +28,16 @@ use crate::prelude::*;
 #[panic_handler]
 fn panic(info: &PanicInfo) -> ! {
     error!("Kernel panic!");
-    error!("{}", info);
+    info!("{}", info);
 
-    crate::platform::halt::halt_cpu();
+    crate::platform::permanent_halt();
 }
 
 #[cfg(test)]
 #[panic_handler]
 fn panic(info: &PanicInfo) -> ! {
     error!("[failed]\n");
-    error!("{}\n", info);
+    info!("{}\n", info);
 
-    crate::platform::halt::halt_cpu();
+    crate::platform::permanent_halt();
 }

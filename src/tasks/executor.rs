@@ -91,7 +91,7 @@ impl TaskExecutor {
 
     fn sleep_if_idle(&self) {
         if self.task_queue.is_empty() {
-            crate::platform::halt::halt_cpu();
+            crate::platform::temporal_halt();
         }
     }
 }

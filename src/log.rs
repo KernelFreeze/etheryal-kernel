@@ -25,7 +25,6 @@ use core::fmt::{self, Write};
 use log::{Level, Metadata, Record};
 
 fn print(args: fmt::Arguments) {
-    #[cfg(target_arch = "x86_64")]
     crate::framebuffer::WRITER
         .lock()
         .as_mut()

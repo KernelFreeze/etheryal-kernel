@@ -20,12 +20,46 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-pub mod halt;
-
-mod software;
+#[cfg(target_arch = "x86_64")]
+#[inline(always)]
+pub unsafe fn init() {
+    x86_64::init();
+}
 
 #[cfg(target_arch = "x86_64")]
-mod x86_64;
+#[inline(always)]
+pub unsafe fn pre_init() {
+    x86_64::pre_init();
+}
+
+#[cfg(target_arch = "x86")]
+#[inline(always)]
+pub fn init_platform() {}
+
+#[cfg(target_arch = "aarch64")]
+#[inline(always)]
+pub fn init_platform() {}
+
+#[cfg(target_arch = "arm")]
+#[inline(always)]
+pub fn init_platform() {}
+
+#[cfg(target_arch = "riscv32imac")]
+#[inline(always)]
+pub fn init_platform() {}
+
+pub fn permanent_halt() -> ! {
+    #[cfg(target_arch = "x86_64")]
+    self::halt::permanent_halt()
+}
+
+pub fn temporal_halt() {
+    #[cfg(target_arch = "x86_64")]
+    self::halt::temporal_halt()
+}
+
+mod halt;
+mod software;
 
 #[cfg(target_arch = "aarch64")]
 mod aarch64;
@@ -37,23 +71,4 @@ mod arm;
 mod riscv32imac;
 
 #[cfg(target_arch = "x86_64")]
-pub unsafe fn init() {
-    x86_64::init();
-}
-
-#[cfg(target_arch = "x86_64")]
-pub unsafe fn pre_init() {
-    x86_64::pre_init();
-}
-
-#[cfg(target_arch = "x86")]
-pub fn init_platform() {}
-
-#[cfg(target_arch = "aarch64")]
-pub fn init_platform() {}
-
-#[cfg(target_arch = "arm")]
-pub fn init_platform() {}
-
-#[cfg(target_arch = "riscv32imac")]
-pub fn init_platform() {}
+mod x86_64;
