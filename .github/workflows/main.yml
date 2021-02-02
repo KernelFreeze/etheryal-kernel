@@ -35,6 +35,7 @@ jobs:
         run: |
           rustup set profile minimal
           rustup toolchain update nightly --no-self-update
+          rustup default nightly
           cargo install --force cargo-make
           cargo install --git https://github.com/etheryal/bootimage --branch main
           rustup show
