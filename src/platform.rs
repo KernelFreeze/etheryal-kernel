@@ -60,3 +60,5 @@ pub fn temporal_halt() {
 
 mod hal;
 mod halt;
+
+pub mod rand;

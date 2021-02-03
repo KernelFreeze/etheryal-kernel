@@ -18,6 +18,7 @@
         "memset",
         "microkernel",
         "microkernels",
+        "prng",
         "rustc"
     ]
 }

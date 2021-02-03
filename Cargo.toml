@@ -14,28 +14,36 @@ built = { version = "0.4", features = ["git2"] }
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+# Random values
 uuid = { version = "0.8", default-features = false }
+rand_chacha = { version = "0.3", default-features = false }
+rand_core = { version = "0.6", default-features = false }
+
+# Boot
 bootloader = { git = "https://github.com/etheryal/bootloader", branch = "uefi" }
 volatile = { version = "0.4", features = ["unstable"] }
 font8x8 = { version = "0.2", default-features = false, features = ["unicode"] }
+
+# Syncronization and async
 spin = { version = "0.7", features = ["ticket_mutex"] }
 futures = { version = "0.3", default-features = false }
+crossbeam-queue = { version = "0.3.1", default-features = false, features = ["alloc"] }
+
+# Memory management
 buddy_system_allocator = "0.6"
 bitflags = "1.2"
-core_detect = "0.1"
+
+# Platform
 log = { version = "0.4", default-features = false }
 libm = "0.2"
 
+# Platform specifics
 [target.'cfg(target_arch = "x86_64")'.dependencies]
+core_detect = "0.1"
 x86_64 = { version = "0.13" }
 
 [package.metadata.bootloader]
 map-physical-memory = true
-
-[dependencies.crossbeam-queue]
-version = "0.3"
-default-features = false
-features = ["alloc"]
 
 [dependencies.wasmi]
 git = "https://github.com/etheryal/wasmi"
