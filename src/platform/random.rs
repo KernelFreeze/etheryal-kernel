@@ -27,10 +27,29 @@ use rand_chacha::ChaChaRng;
 use rand_core::{RngCore, SeedableRng};
 use spin::Lazy;
 
-use crate::platform::datetime;
-
 const ENTROPY_POOL_SIZE: usize = 1024;
 static ENTROPY_POOL: Lazy<ArrayQueue<u8>> = Lazy::new(create_entropy_pool);
+
+fn create_entropy_pool() -> ArrayQueue<u8> {
+    use crate::platform::datetime::get_datetime;
+
+    let queue = ArrayQueue::new(ENTROPY_POOL_SIZE);
+
+    let time = get_datetime().timestamp();
+    let time = unsafe { mem::transmute::<i64, u64>(time) };
+
+    // TODO: More entropy sources, a single timestamp is not safe for cryptography
+    // applications
+    let mut rng = ChaChaRng::seed_from_u64(time);
+    let mut bytes = [0u8; ENTROPY_POOL_SIZE / 2];
+    rng.fill_bytes(&mut bytes);
+
+    for byte in bytes.iter() {
+        queue.push(*byte).expect("Failed to fill entropy pool");
+    }
+
+    queue
+}
 
 fn prng_seed() -> Option<[u8; 32]> {
     if ENTROPY_POOL.len() < 32 {
@@ -50,25 +69,9 @@ fn prng_seed() -> Option<[u8; 32]> {
     Some(seed)
 }
 
-fn create_entropy_pool() -> ArrayQueue<u8> {
-    let queue = ArrayQueue::new(ENTROPY_POOL_SIZE);
-
-    let time = datetime::get_datetime().timestamp();
-    let time = unsafe { mem::transmute::<i64, u64>(time) };
-
-    let mut rng = ChaChaRng::seed_from_u64(time);
-    let mut bytes = [0u8; ENTROPY_POOL_SIZE];
-    rng.fill_bytes(&mut bytes);
-
-    for byte in bytes.iter() {
-        queue.push(*byte).expect("Failed to fill entropy pool");
-    }
-
-    queue
-}
-
+/// Get a seed that is safe to use for creation of PRNGs
 #[cfg(target_arch = "x86_64")]
-fn get_secure_seed() -> Option<[u8; 32]> {
+pub fn get_secure_seed() -> Option<[u8; 32]> {
     use super::hal::x86_64::rand::RdSeed;
 
     let seeder = RdSeed::new();
@@ -99,11 +102,22 @@ fn get_secure_seed() -> Option<[u8; 32]> {
     }
 }
 
+/// Get a seed that is safe to use for creation of PRNGs
 #[cfg(not(target_arch = "x86_64"))]
 pub fn get_secure_seed() -> [u8; 32] {
     prng_seed()
 }
 
+/// Get a random number generator
 pub fn get_random() -> Option<ChaChaRng> {
     get_secure_seed().map(ChaChaRng::from_seed)
+}
+
+/// Try to add bytes to the kernel entropy pool
+pub fn add_bytes_to_entropy_pool(bytes: &[u8]) {
+    for byte in bytes {
+        if let Err(_) = ENTROPY_POOL.push(*byte) {
+            return;
+        }
+    }
 }

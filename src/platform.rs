@@ -52,4 +52,4 @@ mod hal;
 
 pub mod datetime;
 pub mod halt;
-pub mod rand;
+pub mod random;
