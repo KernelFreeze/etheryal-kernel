@@ -21,6 +21,7 @@
 // SOFTWARE.
 
 #[cfg(target_arch = "x86_64")]
+#[inline(always)]
 pub fn permanent_halt() -> ! {
     loop {
         x86_64::instructions::hlt();
@@ -28,6 +29,7 @@ pub fn permanent_halt() -> ! {
 }
 
 #[cfg(target_arch = "x86_64")]
+#[inline(always)]
 pub fn temporal_halt() {
     x86_64::instructions::hlt();
 }

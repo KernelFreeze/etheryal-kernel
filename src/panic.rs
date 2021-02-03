@@ -30,7 +30,7 @@ fn panic(info: &PanicInfo) -> ! {
     error!("Kernel panic!");
     info!("{}", info);
 
-    crate::platform::permanent_halt();
+    crate::platform::halt::permanent_halt();
 }
 
 #[cfg(test)]
@@ -39,5 +39,5 @@ fn panic(info: &PanicInfo) -> ! {
     error!("[failed]\n");
     info!("{}\n", info);
 
-    crate::platform::permanent_halt();
+    crate::platform::halt::permanent_halt();
 }

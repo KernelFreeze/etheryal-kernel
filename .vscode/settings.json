@@ -4,6 +4,7 @@
         "**/target/**": true
     },
     "cSpell.words": [
+        "CMOS",
         "QEMU",
         "UEFI",
         "WASM",

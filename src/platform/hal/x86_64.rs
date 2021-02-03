@@ -24,12 +24,6 @@ use x86_64::registers::control::{Cr0, Cr0Flags, Cr4, Cr4Flags};
 
 use self::registers::control::{Xcr0, Xcr0Flags};
 
-pub mod apic;
-pub mod gdt;
-pub mod interrupts;
-pub mod rand;
-pub mod registers;
-
 /// Enable SIMD
 ///
 /// This function is unsafe because sets CPU registers
@@ -60,3 +54,10 @@ pub unsafe fn init() {
 
     apic::init();
 }
+
+pub mod apic;
+pub mod date;
+pub mod gdt;
+pub mod interrupts;
+pub mod rand;
+pub mod registers;

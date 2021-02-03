@@ -9,7 +9,7 @@ build = "build.rs"
 crate-type = ["bin"]
 
 [build-dependencies]
-built = { version = "0.4", features = ["git2"] }
+built = { git = "https://github.com/etheryal/built", features = ["git2", "chrono"] }
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
@@ -34,12 +34,14 @@ buddy_system_allocator = "0.6"
 bitflags = "1.2"
 
 # Platform
+chrono = { git = "https://github.com/chronotope/chrono", branch = "main", default-features = false, features = ["alloc"] }
 log = { version = "0.4", default-features = false }
 libm = "0.2"
 
 # Platform specifics
 [target.'cfg(target_arch = "x86_64")'.dependencies]
 core_detect = "0.1"
+cmos = "0.1"
 x86_64 = { version = "0.13" }
 
 [package.metadata.bootloader]

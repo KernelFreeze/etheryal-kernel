@@ -48,17 +48,8 @@ pub fn init_platform() {}
 #[inline(always)]
 pub fn init_platform() {}
 
-pub fn permanent_halt() -> ! {
-    #[cfg(target_arch = "x86_64")]
-    self::halt::permanent_halt()
-}
-
-pub fn temporal_halt() {
-    #[cfg(target_arch = "x86_64")]
-    self::halt::temporal_halt()
-}
-
 mod hal;
-mod halt;
 
+pub mod datetime;
+pub mod halt;
 pub mod rand;

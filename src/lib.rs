@@ -21,15 +21,18 @@
 // SOFTWARE.
 
 #![allow(dead_code)]
-#![feature(abi_x86_interrupt)]
-#![feature(custom_test_frameworks)]
-#![feature(default_alloc_error_handler)]
-#![feature(wake_trait)]
-#![feature(const_mut_refs)]
-#![feature(async_closure)]
-#![feature(alloc_prelude)]
-#![feature(asm)]
-#![feature(box_syntax)]
+#![feature(
+    abi_x86_interrupt,
+    custom_test_frameworks,
+    default_alloc_error_handler,
+    wake_trait,
+    const_mut_refs,
+    async_closure,
+    alloc_prelude,
+    asm,
+    once_cell,
+    box_syntax
+)]
 #![test_runner(crate::test_runner::run_all_tests)]
 #![reexport_test_harness_main = "test_main"]
 #![no_std]

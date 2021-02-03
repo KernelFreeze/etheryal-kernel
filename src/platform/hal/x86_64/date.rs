@@ -19,3 +19,19 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
+
+use chrono::prelude::*;
+use cmos::{CMOSCenturyHandler, RTCDateTime, CMOS};
+
+unsafe fn read_rtc() -> RTCDateTime {
+    let mut cmos = CMOS::new();
+    cmos.read_rtc(CMOSCenturyHandler::CurrentYear(
+        crate::build_info::BUILT_TIME_YEAR as usize,
+    ))
+}
+
+pub fn read_datetime() -> DateTime<Utc> {
+    let date = unsafe { read_rtc() };
+    Utc.ymd(date.year as i32, date.month as u32, date.day as u32)
+        .and_hms(date.hour as u32, date.minute as u32, date.second as u32)
+}

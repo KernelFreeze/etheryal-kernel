@@ -48,7 +48,7 @@ pub fn main(boot_info: &'static mut BootInfo) -> ! {
 #[cfg(test)]
 fn run_tests() -> ! {
     crate::test_main();
-    crate::platform::permanent_halt();
+    crate::platform::halt::permanent_halt();
 }
 
 #[cfg(not(test))]

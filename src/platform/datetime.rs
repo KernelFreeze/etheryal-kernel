@@ -20,6 +20,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-pub fn read_date() {
-    
+use chrono::prelude::*;
+
+#[cfg(target_arch = "x86_64")]
+pub fn get_datetime() -> DateTime<Utc> {
+    super::hal::x86_64::date::read_datetime()
 }

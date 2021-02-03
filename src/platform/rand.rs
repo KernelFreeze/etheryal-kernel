@@ -20,30 +20,56 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+use core::mem;
+
+use crossbeam_queue::ArrayQueue;
 use rand_chacha::ChaChaRng;
 use rand_core::{RngCore, SeedableRng};
+use spin::Lazy;
 
-fn prng_seed() -> [u8; 32] {
-    let seed = [0u8; 32];
-    let mut rng = ChaChaRng::from_seed(seed);
+use crate::platform::datetime;
 
-    let mut results = [0u8; 32];
-    rng.fill_bytes(&mut results);
-    results
+const ENTROPY_POOL_SIZE: usize = 1024;
+static ENTROPY_POOL: Lazy<ArrayQueue<u8>> = Lazy::new(create_entropy_pool);
+
+fn prng_seed() -> Option<[u8; 32]> {
+    if ENTROPY_POOL.len() < 32 {
+        return None;
+    }
+
+    let mut seed = [0u8; 32];
+
+    for byte in seed.iter_mut() {
+        if let Some(entropy) = ENTROPY_POOL.pop() {
+            *byte = entropy;
+        } else {
+            return None;
+        }
+    }
+
+    Some(seed)
+}
+
+fn create_entropy_pool() -> ArrayQueue<u8> {
+    let queue = ArrayQueue::new(ENTROPY_POOL_SIZE);
+
+    let time = datetime::get_datetime().timestamp();
+    let time = unsafe { mem::transmute::<i64, u64>(time) };
+
+    let mut rng = ChaChaRng::seed_from_u64(time);
+    let mut bytes = [0u8; ENTROPY_POOL_SIZE];
+    rng.fill_bytes(&mut bytes);
+
+    for byte in bytes.iter() {
+        queue.push(*byte).expect("Failed to fill entropy pool");
+    }
+
+    queue
 }
 
 #[cfg(target_arch = "x86_64")]
-fn x86_64_seed() -> [u8; 32] {
+fn get_secure_seed() -> Option<[u8; 32]> {
     use super::hal::x86_64::rand::RdSeed;
-
-    fn u32_to_bytes(x: u32) -> [u8; 4] {
-        let b1: u8 = ((x >> 24) & 0xff) as u8;
-        let b2: u8 = ((x >> 16) & 0xff) as u8;
-        let b3: u8 = ((x >> 8) & 0xff) as u8;
-        let b4: u8 = (x & 0xff) as u8;
-
-        return [b1, b2, b3, b4];
-    }
 
     let seeder = RdSeed::new();
 
@@ -51,10 +77,10 @@ fn x86_64_seed() -> [u8; 32] {
         let mut seed = [0u8; 32];
 
         let get_next = || {
-            let bytes = seeder
+            seeder
                 .get_u32()
-                .unwrap_or_else(|| ChaChaRng::from_seed(prng_seed()).next_u32());
-            u32_to_bytes(bytes)
+                .unwrap_or_else(|| ChaChaRng::from_seed(prng_seed().unwrap_or([1u8; 32])).next_u32())
+                .to_le_bytes()
         };
 
         let mut iter = seed.as_mut().chunks_exact_mut(4);
@@ -65,16 +91,12 @@ fn x86_64_seed() -> [u8; 32] {
         if !rem.is_empty() {
             rem.copy_from_slice(&get_next()[..rem.len()]);
         }
-        seed
+
+        Some(seed)
     } else {
         // Fallback to pseudo random if hardware generator is not available
         prng_seed()
     }
-}
-
-#[cfg(target_arch = "x86_64")]
-pub fn get_secure_seed() -> [u8; 32] {
-    x86_64_seed()
 }
 
 #[cfg(not(target_arch = "x86_64"))]
@@ -82,6 +104,6 @@ pub fn get_secure_seed() -> [u8; 32] {
     prng_seed()
 }
 
-pub fn get_random() -> ChaChaRng {
-    ChaChaRng::from_seed(get_secure_seed())
+pub fn get_random() -> Option<ChaChaRng> {
+    get_secure_seed().map(ChaChaRng::from_seed)
 }
