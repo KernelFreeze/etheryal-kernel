@@ -25,8 +25,22 @@ install_crate = { rustup_component_name = "clippy" }
 description = "Runs clippy checks."
 category = "Build"
 command = "cargo"
-args = ["clippy", "--color", "always", "--all-targets", "--all-features", "--", "-D","warnings"]
-dependencies = ["download-compiler-rt", "install-llvm-tools-preview", "install-rust-src", "install-clippy"]
+args = [
+    "clippy",
+    "--color",
+    "always",
+    "--all-targets",
+    "--all-features",
+    "--",
+    "-D",
+    "warnings",
+]
+dependencies = [
+    "download-compiler-rt",
+    "install-llvm-tools-preview",
+    "install-rust-src",
+    "install-clippy",
+]
 
 [tasks.fmt-check]
 install_crate = { rustup_component_name = "rustfmt-preview", binary = "rustfmt", test_arg = "--help" }
@@ -38,32 +52,48 @@ description = "Runs the rust compiler."
 category = "Build"
 command = "cargo"
 args = ["build"]
-dependencies = ["download-compiler-rt","install-llvm-tools-preview", "install-rust-src"]
+dependencies = [
+    "download-compiler-rt",
+    "install-llvm-tools-preview",
+    "install-rust-src",
+]
 
 [tasks.build-release]
 description = "Runs the rust compiler on release mode."
 category = "Build"
 command = "cargo"
 args = ["build", "--release"]
-dependencies = ["download-compiler-rt", "install-llvm-tools-preview", "install-rust-src"]
+dependencies = [
+    "download-compiler-rt",
+    "install-llvm-tools-preview",
+    "install-rust-src",
+]
 
 [tasks.build-image]
 description = "Runs etheryal bootimage."
 category = "Build"
 command = "etheryal-bootimage"
-args = ["--out", "out", "--build-cmd", "make build-release", "--create-out", "build"]
+args = [
+    "--out",
+    "out",
+    "--build-cmd",
+    "make build-release",
+    "--target", "etheryal-kernel-x86_64",
+    "--create-out",
+    "build",
+]
 
 [tasks.run-qemu]
 description = "Runs etheryal bootimage, and start qemu emulator."
 category = "Build"
 command = "etheryal-bootimage"
-args = ["--out", "out", "--build-cmd", "make build-release", "--create-out", "run"]
+args = ["--out", "out", "--build-cmd", "make build-release", "--target", "etheryal-kernel-x86_64", "--create-out", "run"]
 
 [tasks.test]
 description = "Tests etheryal kernel."
 category = "Build"
 command = "etheryal-bootimage"
-args = ["--out", "out", "--build-cmd", "make build-release", "--create-out", "test"]
+args = ["--out", "out", "--build-cmd", "make build-release", "--target", "etheryal-kernel-x86_64", "--create-out", "test"]
 
 [tasks.dev-test-flow]
 dependencies = ["format", "clippy", "build"]

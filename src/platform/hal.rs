@@ -20,43 +20,12 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#[cfg(target_arch = "x86_64")]
-#[inline(always)]
-pub unsafe fn init() {
-    hal::x86_64::init();
-}
-
-#[cfg(target_arch = "x86_64")]
-#[inline(always)]
-pub unsafe fn pre_init() {
-    hal::x86_64::pre_init();
-}
-
-#[cfg(target_arch = "x86")]
-#[inline(always)]
-pub fn init_platform() {}
-
 #[cfg(target_arch = "aarch64")]
-#[inline(always)]
-pub fn init_platform() {}
-
+pub mod aarch64;
 #[cfg(target_arch = "arm")]
-#[inline(always)]
-pub fn init_platform() {}
-
+pub mod arm;
 #[cfg(target_arch = "riscv32imac")]
-#[inline(always)]
-pub fn init_platform() {}
-
-pub fn permanent_halt() -> ! {
-    #[cfg(target_arch = "x86_64")]
-    self::halt::permanent_halt()
-}
-
-pub fn temporal_halt() {
-    #[cfg(target_arch = "x86_64")]
-    self::halt::temporal_halt()
-}
-
-mod hal;
-mod halt;
+pub mod riscv32imac;
+pub mod software;
+#[cfg(target_arch = "x86_64")]
+pub mod x86_64;
