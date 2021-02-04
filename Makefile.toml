@@ -18,6 +18,9 @@ install_crate = { rustup_component_name = "llvm-tools-preview" }
 [tasks.install-rust-src]
 install_crate = { rustup_component_name = "rust-src" }
 
+[tasks.install-etheryal-bootimage]
+install_crate = { crate_name = "etheryal-bootimage", binary = "etheryal-bootimage", test_arg = ["--help"] }
+
 [tasks.install-clippy]
 install_crate = { rustup_component_name = "clippy" }
 
@@ -59,13 +62,8 @@ dependencies = [
     "download-compiler-rt",
     "install-llvm-tools-preview",
     "install-rust-src",
+    "install-etheryal-bootimage",
 ]
-
-[tasks.dev-test-flow]
-dependencies = ["format", "clippy", "test"]
-
-[tasks.build-flow]
-dependencies = ["format", "build"]
 
 [tasks.run]
 description = "Runs etheryal in a virtual machine."
@@ -76,4 +74,12 @@ dependencies = [
     "download-compiler-rt",
     "install-llvm-tools-preview",
     "install-rust-src",
+    "install-etheryal-bootimage",
 ]
+
+
+[tasks.dev-test-flow]
+dependencies = ["format", "clippy", "test"]
+
+[tasks.build-flow]
+dependencies = ["format", "build"]

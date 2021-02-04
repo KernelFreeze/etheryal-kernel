@@ -20,13 +20,11 @@ etheryal is licensed under the permissive MIT license.
 
 # ⚒ Building
 
-You can build a Kernel image with just `cargo make`, but is often desireable to create a booteable image for debugging purposes. Our `bootimage` tool creates a UEFI and BIOS booteable `.img` files, that you can run in your favorite emulator or on bare-metal hardware.
+You can build a Kernel binary with just `cargo make`.
 
 ```bash
-cargo install --git https://github.com/etheryal/bootimage --branch main
 cargo install --force cargo-make
-
-cargo make build-image
+cargo make build
 ```
 
 # 🥳 Running
@@ -34,8 +32,6 @@ cargo make build-image
 You can start a QEMU virtual machine running our `bootimage` with `cargo make`.
 
 ```bash
-cargo install --git https://github.com/etheryal/bootimage --branch main
 cargo install --force cargo-make
-
-cargo make run-qemu
+cargo make run
 ```
