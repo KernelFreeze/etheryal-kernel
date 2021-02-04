@@ -1,17 +1,3 @@
-[env]
-RUST_COMPILER_RT_ROOT = "${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/libs/compiler-rt"
-
-[tasks.download-compiler-rt]
-install_script = '''
-if [ ! -d "libs/compiler-rt/" ] 
-then
-    echo "Downloading LLVM's compiler RT."
-    mkdir -p libs/compiler-rt/
-    cd libs/compiler-rt/
-    curl -L https://github.com/llvm/llvm-project/tarball/llvmorg-11.0.1 | tar xz --wildcards "*/compiler-rt/*" --strip-components=2
-fi
-'''
-
 [tasks.install-llvm-tools-preview]
 install_crate = { rustup_component_name = "llvm-tools-preview" }
 
@@ -39,7 +25,6 @@ args = [
     "warnings",
 ]
 dependencies = [
-    "download-compiler-rt",
     "install-llvm-tools-preview",
     "install-rust-src",
     "install-clippy",
@@ -51,15 +36,10 @@ command = "cargo"
 args = ["fmt", "--", "--color", "always", "--check"]
 
 [tasks.build]
-dependencies = [
-    "download-compiler-rt",
-    "install-llvm-tools-preview",
-    "install-rust-src",
-]
+dependencies = ["install-llvm-tools-preview", "install-rust-src"]
 
 [tasks.test]
 dependencies = [
-    "download-compiler-rt",
     "install-llvm-tools-preview",
     "install-rust-src",
     "install-etheryal-bootimage",
@@ -71,12 +51,10 @@ category = "Build"
 command = "cargo"
 args = ["run"]
 dependencies = [
-    "download-compiler-rt",
     "install-llvm-tools-preview",
     "install-rust-src",
     "install-etheryal-bootimage",
 ]
-
 
 [tasks.dev-test-flow]
 dependencies = ["format", "clippy", "test"]
