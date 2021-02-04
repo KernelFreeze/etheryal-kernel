@@ -22,35 +22,36 @@
 
 #[cfg(target_arch = "x86_64")]
 #[inline(always)]
-pub unsafe fn init() {
+pub fn init() {
     hal::x86_64::init();
 }
 
 #[cfg(target_arch = "x86_64")]
 #[inline(always)]
-pub unsafe fn pre_init() {
+pub fn pre_init() {
     hal::x86_64::pre_init();
 }
 
 #[cfg(target_arch = "x86")]
 #[inline(always)]
-pub fn init_platform() {}
+pub fn init() {}
 
 #[cfg(target_arch = "aarch64")]
 #[inline(always)]
-pub fn init_platform() {}
+pub fn init() {}
 
 #[cfg(target_arch = "arm")]
 #[inline(always)]
-pub fn init_platform() {}
+pub fn init() {}
 
 #[cfg(target_arch = "riscv32imac")]
 #[inline(always)]
-pub fn init_platform() {}
+pub fn init() {}
 
 mod hal;
 
 pub mod datetime;
 pub mod exit;
+pub mod framebuffer;
 pub mod halt;
 pub mod random;

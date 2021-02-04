@@ -19,3 +19,24 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
+use log::{Level, Metadata, Record};
+
+pub struct KernelLogger;
+
+impl log::Log for KernelLogger {
+    fn enabled(&self, metadata: &Metadata) -> bool {
+        metadata.level() <= Level::Info
+    }
+
+    fn log(&self, record: &Record) {
+        if self.enabled(record.metadata()) {
+            crate::platform::framebuffer::print_text(format_args!(
+                "{} - {}\n",
+                record.level(),
+                record.args()
+            ));
+        }
+    }
+
+    fn flush(&self) {}
+}

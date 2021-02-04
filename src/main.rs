@@ -39,8 +39,7 @@
 #![no_main]
 
 mod driver;
-mod framebuffer;
-mod log;
+mod logger;
 mod memory;
 mod panic;
 mod platform;

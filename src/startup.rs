@@ -22,24 +22,22 @@
 
 use bootloader::BootInfo;
 
-use crate::build_info;
-use crate::log::KernelLogger;
+use crate::logger::KernelLogger;
 use crate::prelude::*;
+use crate::{build_info, *};
 
 pub fn main(boot_info: &'static mut BootInfo) -> ! {
-    unsafe {
-        crate::platform::pre_init();
-    }
+    platform::pre_init();
 
     // Initialize screen output
     let framebuffer = boot_info.framebuffer.as_mut();
     if let Some(framebuffer) = framebuffer {
-        crate::framebuffer::init(framebuffer);
+        platform::framebuffer::init(framebuffer);
     }
 
     // Initialize logger
     log::set_logger(&KernelLogger)
-        .map(|()| log::set_max_level(LevelFilter::Info))
+        .map(|_| log::set_max_level(LevelFilter::Info))
         .expect("Failed to initialize logger");
 
     // Initialize memory allocation
@@ -47,20 +45,13 @@ pub fn main(boot_info: &'static mut BootInfo) -> ! {
         .physical_memory_offset
         .into_option()
         .expect("Failed to map virtual memory address.");
-    let memory_regions = &mut boot_info.memory_regions;
-    crate::memory::allocator::init(memory_regions, memory_offset);
+    memory::init(&mut boot_info.memory_regions, memory_offset);
 
     // Display build information
-    if let Some(git_version) = build_info::GIT_VERSION {
-        info!("etheryal kernel git {}", git_version);
-    } else {
-        info!("etheryal kernel v{}", build_info::PKG_VERSION);
-    }
+    info!("etheryal kernel v{}", build_info::PKG_VERSION);
     info!("build with {}", build_info::RUSTC_VERSION);
 
-    unsafe {
-        crate::platform::init();
-    }
+    platform::init();
 
     #[cfg(test)]
     run_tests();
@@ -71,15 +62,15 @@ pub fn main(boot_info: &'static mut BootInfo) -> ! {
 
 #[cfg(test)]
 fn run_tests() -> ! {
-    use crate::platform::exit::{exit_with, ExitDiagnostics};
+    use platform::exit::{exit_with, ExitDiagnostics};
 
-    crate::test_main();
+    test_main();
     exit_with(ExitDiagnostics::Success);
 }
 
 #[cfg(not(test))]
 fn init_scheduler() -> ! {
-    use crate::tasks::executor::TaskExecutor;
+    use tasks::executor::TaskExecutor;
 
     let mut task_executor = TaskExecutor::new();
     // task_executor.spawn(async {

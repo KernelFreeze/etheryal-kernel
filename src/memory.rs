@@ -20,4 +20,22 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-pub mod allocator;
+use bootloader::memory_region::{MemoryRegion, MemoryRegionKind};
+use buddy_system_allocator::LockedHeap;
+
+#[global_allocator]
+static ALLOCATOR: LockedHeap = LockedHeap::empty();
+
+pub fn init(memory_regions: &mut [MemoryRegion], offset: u64) {
+    let mut allocator = ALLOCATOR.lock();
+
+    memory_regions
+        .iter()
+        .filter(|r| r.kind == MemoryRegionKind::Usable)
+        .for_each(|region| unsafe {
+            let start = (region.start + offset) as usize;
+            let end = (region.end + offset) as usize;
+
+            allocator.add_to_heap(start, end)
+        });
+}

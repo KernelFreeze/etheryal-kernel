@@ -34,10 +34,10 @@ const CHARACTER_SPACE: usize = 8;
 static WRITER: Mutex<Option<FramebufferWriter>> = Mutex::new(None);
 
 pub fn init(framebuffer: &'static mut FrameBuffer) {
-    let already_init_error = "Global writer already initialized";
+    const ALREADY_INIT_ERROR: &str = "Global writer already initialized";
 
-    let mut global_writer = WRITER.try_lock().expect(already_init_error);
-    assert!(global_writer.is_none(), already_init_error);
+    let mut global_writer = WRITER.try_lock().expect(ALREADY_INIT_ERROR);
+    assert!(global_writer.is_none(), ALREADY_INIT_ERROR);
     *global_writer = Some(FramebufferWriter::new(framebuffer));
 }
 
@@ -48,6 +48,7 @@ pub fn print_text(args: fmt::Arguments) {
     }
 }
 
+#[inline(always)]
 pub fn is_available() -> bool {
     WRITER.lock().is_some()
 }
@@ -170,6 +171,6 @@ impl fmt::Write for FramebufferWriter<'_> {
 #[test_case]
 fn test_framebuffer() {
     for i in 0..10 {
-        crate::framebuffer::print_text(format_args!("Test framebuffer {}\n", i));
+        print_text(format_args!("Test framebuffer {}\n", i));
     }
 }
