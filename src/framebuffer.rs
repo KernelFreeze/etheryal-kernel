@@ -33,13 +33,26 @@ const CHARACTER_SPACE: usize = 8;
 
 static WRITER: Mutex<Option<FramebufferWriter>> = Mutex::new(None);
 
-pub fn init(writer: FramebufferWriter<'static>) {
-    let mut global_writer = WRITER.try_lock().unwrap();
-    assert!(global_writer.is_none(), "Global writer already initialized");
-    *global_writer = Some(writer);
+pub fn init(framebuffer: &'static mut FrameBuffer) {
+    let already_init_error = "Global writer already initialized";
+
+    let mut global_writer = WRITER.try_lock().expect(already_init_error);
+    assert!(global_writer.is_none(), already_init_error);
+    *global_writer = Some(FramebufferWriter::new(framebuffer));
 }
 
-pub struct FramebufferWriter<'a> {
+pub fn print_text(args: fmt::Arguments) {
+    let mut writer = WRITER.lock();
+    if let Some(writer) = writer.as_mut() {
+        writer.write_fmt(args).unwrap();
+    }
+}
+
+pub fn is_available() -> bool {
+    WRITER.lock().is_some()
+}
+
+struct FramebufferWriter<'a> {
     buffer: Volatile<&'a mut [u8]>,
     info: FrameBufferInfo,
     x_pos: usize,
@@ -48,7 +61,7 @@ pub struct FramebufferWriter<'a> {
 
 impl<'a> FramebufferWriter<'a> {
     #[inline(always)]
-    pub fn new(framebuffer: &'a mut FrameBuffer) -> FramebufferWriter<'a> {
+    fn new(framebuffer: &'a mut FrameBuffer) -> FramebufferWriter<'a> {
         let mut writer = FramebufferWriter {
             info: framebuffer.info(),
             buffer: Volatile::new(framebuffer.buffer_mut()),
@@ -69,7 +82,7 @@ impl<'a> FramebufferWriter<'a> {
     }
 
     /// Erases all text on the screen
-    pub fn clear(&mut self) {
+    fn clear(&mut self) {
         self.newline();
         self.buffer.fill(0);
     }
@@ -154,18 +167,9 @@ impl fmt::Write for FramebufferWriter<'_> {
     }
 }
 
-pub fn print(args: fmt::Arguments) {
-    crate::framebuffer::WRITER
-        .lock()
-        .as_mut()
-        .unwrap()
-        .write_fmt(args)
-        .unwrap();
-}
-
 #[test_case]
 fn test_framebuffer() {
     for i in 0..10 {
-        crate::framebuffer::print(format_args!("Test framebuffer {}\n", i));
+        crate::framebuffer::print_text(format_args!("Test framebuffer {}\n", i));
     }
 }

@@ -23,7 +23,6 @@
 use bootloader::BootInfo;
 
 use crate::build_info;
-use crate::framebuffer::FramebufferWriter;
 use crate::log::KernelLogger;
 use crate::prelude::*;
 
@@ -33,11 +32,10 @@ pub fn main(boot_info: &'static mut BootInfo) -> ! {
     }
 
     // Initialize screen output
-    let framebuffer = boot_info
-        .framebuffer
-        .as_mut()
-        .expect("Failed to adquire screen framebuffer.");
-    crate::framebuffer::init(FramebufferWriter::new(framebuffer));
+    let framebuffer = boot_info.framebuffer.as_mut();
+    if let Some(framebuffer) = framebuffer {
+        crate::framebuffer::init(framebuffer);
+    }
 
     // Initialize logger
     log::set_logger(&KernelLogger)

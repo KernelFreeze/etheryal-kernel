@@ -30,7 +30,7 @@ impl log::Log for KernelLogger {
 
     fn log(&self, record: &Record) {
         if self.enabled(record.metadata()) {
-            crate::framebuffer::print(format_args!("{} - {}\n", record.level(), record.args()));
+            crate::framebuffer::print_text(format_args!("{} - {}\n", record.level(), record.args()));
         }
     }
 

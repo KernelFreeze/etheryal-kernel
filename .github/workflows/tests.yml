@@ -38,7 +38,6 @@ jobs:
           rustup show
           cargo --version
           cargo make --version
-          etheryal-bootimage --version
       - name: Install QEMU
         run: |
           sudo apt update

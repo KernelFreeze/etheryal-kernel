@@ -4,9 +4,9 @@
 
 # 😳 etheryal Kernel
 
-**etheryal microkernel** is an Open Source *capability-based* Kernel written in the Rust programming language. *etheryal Kernel* uses a modular design based on Webassembly System Interface (WASI), containerizing drivers and user-space applications in a safe lightweight sandbox (WASM), without requiring slow kernel-mode to user-mode switches on every system call and interrupt, that may happen really often in common workloads. Just like [Singularity](https://en.wikipedia.org/wiki/Singularity_(operating_system)), etheryal internal security uses type safety instead of hardware memory protection.
+**etheryal kernel** is an Open Source *capability-based* Kernel written in the Rust programming language. *etheryal Kernel* uses a modular design based on Webassembly System Interface (WASI), containerizing drivers and user-space applications in a safe lightweight sandbox (WASM), without requiring slow kernel-mode to user-mode switches on every system call and interrupt, that may happen really often in common workloads. Just like [Singularity](https://en.wikipedia.org/wiki/Singularity_(operating_system)), etheryal internal security uses type safety instead of hardware memory protection.
 
-Unlike most historic microkernels, etheryal components execute in the same address space (process), which contains software-isolated processes (SIPs). Each SIP has its own data and code layout, and is independent from other SIPs. These SIPs behave like normal processes, but avoid the cost of task-switches.
+Unlike most historic kernels, etheryal components execute in the same address space (process), which contains software-isolated processes (SIPs). Each SIP has its own data and code layout, and is independent from other SIPs. These SIPs behave like normal processes, but avoid the cost of task-switches.
 
 # ❤ Features
 
