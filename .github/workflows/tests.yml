@@ -1,4 +1,4 @@
-name: Build
+name: Tests
 
 on: [push, pull_request]
 
@@ -24,24 +24,6 @@ jobs:
           cargo --version
           cargo clippy --version
       - run: cargo make clippy
-  format:
-    name: Check Format
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - name: Install tools
-        run: |
-          rustup set profile minimal
-          rustup toolchain update nightly-2021-01-26 --no-self-update
-          rustup default nightly-2021-01-26
-          rustup component add rustfmt-preview
-          cargo install --force cargo-make
-          rustup show
-          cargo --version
-          cargo make --version
-          cargo --version
-          cargo fmt --version
-      - run: cargo make format-check
   tests:
     name: Run tests
     runs-on: ubuntu-latest
@@ -63,4 +45,6 @@ jobs:
           sudo apt update
           sudo apt install qemu-system-x86
       - name: Run Tests
-        run: cargo make test --verbose
+        run: |
+          mkdir -p out
+          cargo make test --verbose

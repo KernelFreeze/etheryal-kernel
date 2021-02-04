@@ -38,6 +38,7 @@
 #![no_std]
 #![no_main]
 
+mod driver;
 mod framebuffer;
 mod log;
 mod memory;

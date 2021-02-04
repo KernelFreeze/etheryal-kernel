@@ -34,6 +34,7 @@ bitflags = "1.2"
 chrono = { git = "https://github.com/chronotope/chrono", branch = "main", default-features = false, features = ["alloc"] }
 log = { version = "0.4", default-features = false }
 libm = "0.2"
+qemu-exit = { version = "1.0", optional = true }
 
 # Platform specifics
 [target.'cfg(target_arch = "x86_64")'.dependencies]
@@ -57,5 +58,6 @@ lto = true
 [profile.release]
 lto = true
 
-[dev-dependencies]
-qemu-exit = { version = "1.0" }
+[features]
+default = ["qemu"]
+qemu = ["qemu-exit"]

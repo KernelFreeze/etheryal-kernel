@@ -1,0 +1,26 @@
+name: Format
+
+on: [push, pull_request]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  format:
+    name: Check Format
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install tools
+        run: |
+          rustup set profile minimal
+          rustup toolchain update nightly --no-self-update
+          rustup default nightly
+          rustup component add rustfmt-preview
+          cargo install --force cargo-make
+          rustup show
+          cargo --version
+          cargo make --version
+          cargo --version
+          cargo fmt --version
+      - run: cargo make format-check
