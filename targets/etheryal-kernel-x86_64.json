@@ -11,6 +11,5 @@
   "linker": "rust-lld",
   "panic-strategy": "abort",
   "disable-redzone": true,
-  "features": "-mmx,-sse,+soft-float",
   "exe-suffix": ".elf"
 }

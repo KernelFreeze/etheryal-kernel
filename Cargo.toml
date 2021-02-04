@@ -5,9 +5,6 @@ authors = ["KernelFreeze <kernelfreeze@outlook.com>"]
 edition = "2018"
 build = "build.rs"
 
-[lib]
-crate-type = ["bin"]
-
 [build-dependencies]
 built = { git = "https://github.com/etheryal/built", features = ["git2", "chrono"] }
 
@@ -43,6 +40,7 @@ libm = "0.2"
 core_detect = "0.1"
 cmos = "0.1"
 x86_64 = { version = "0.13" }
+apic = { git = "https://github.com/rust-osdev/apic" }
 
 [package.metadata.bootloader]
 map-physical-memory = true
@@ -51,3 +49,13 @@ map-physical-memory = true
 git = "https://github.com/etheryal/wasmi"
 default-features = false
 features = ["core"]
+
+[profile.dev]
+opt-level = 3
+lto = true
+
+[profile.release]
+lto = true
+
+[dev-dependencies]
+qemu-exit = { version = "1.0" }

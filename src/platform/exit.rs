@@ -20,37 +20,36 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#[cfg(target_arch = "x86_64")]
-#[inline(always)]
-pub unsafe fn init() {
-    hal::x86_64::init();
+pub enum ExitDiagnostics {
+    Success,
+    Failure,
+    Panic,
 }
 
-#[cfg(target_arch = "x86_64")]
-#[inline(always)]
-pub unsafe fn pre_init() {
-    hal::x86_64::pre_init();
+#[cfg(not(test))]
+pub fn exit_with(_diagnostic: ExitDiagnostics) -> ! {
+    super::halt::permanent_halt();
 }
 
-#[cfg(target_arch = "x86")]
-#[inline(always)]
-pub fn init_platform() {}
+#[cfg(test)]
+pub fn exit_with(diagnostic: ExitDiagnostics) -> ! {
+    use qemu_exit::QEMUExit;
 
-#[cfg(target_arch = "aarch64")]
-#[inline(always)]
-pub fn init_platform() {}
+    #[cfg(target_arch = "aarch64")]
+    let qemu_exit_handle = qemu_exit::AArch64::new();
 
-#[cfg(target_arch = "arm")]
-#[inline(always)]
-pub fn init_platform() {}
+    // addr: The address of sifive_test.
+    #[cfg(target_arch = "riscv64")]
+    let qemu_exit_handle = qemu_exit::RISCV64::new(addr);
 
-#[cfg(target_arch = "riscv32imac")]
-#[inline(always)]
-pub fn init_platform() {}
+    // io_base: I/O-base of isa-debug-exit.
+    // custom_exit_success: A custom success code; Must be an odd number.
+    #[cfg(target_arch = "x86_64")]
+    let qemu_exit_handle = qemu_exit::X86::new(0xf4, 5);
 
-mod hal;
-
-pub mod datetime;
-pub mod exit;
-pub mod halt;
-pub mod random;
+    match diagnostic {
+        ExitDiagnostics::Success => qemu_exit_handle.exit_success(),
+        ExitDiagnostics::Failure => qemu_exit_handle.exit_failure(),
+        ExitDiagnostics::Panic => qemu_exit_handle.exit(3),
+    };
+}

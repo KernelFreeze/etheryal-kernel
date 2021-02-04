@@ -4,10 +4,13 @@
         "**/target/**": true
     },
     "cSpell.words": [
+        "ACPI",
+        "APIC",
         "CMOS",
         "PRNGs",
         "QEMU",
         "UEFI",
+        "WASI",
         "WASM",
         "booteable",
         "bootimage",

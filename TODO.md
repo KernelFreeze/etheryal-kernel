@@ -1,6 +1,8 @@
 # To do
 
-- Load WASM drivers and modules
+- Implement ACPI
+- Implement APIC
+- Implement park
+- Implement WASI
 - Serial port driver
-- Implement apic controller
-- Implement threads
+- Implement kernel threads

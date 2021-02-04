@@ -27,7 +27,7 @@ use wasmi::{Error, ImportsBuilder, Module, ModuleInstance, NopExternals};
 use self::modules::wasi::WasiImportResolver;
 
 /// Run a Webassembly program
-pub async fn run_binary_program(buff: &[u8]) -> Result<(), Error> {
+pub async fn run_program(buff: &[u8]) -> Result<(), Error> {
     let module = Module::from_buffer(buff)?;
     let mut import_resolver = ImportsBuilder::default();
 

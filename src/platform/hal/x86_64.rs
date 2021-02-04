@@ -40,7 +40,9 @@ unsafe fn enable_simd() {
     }
 }
 
-pub unsafe fn pre_init() {}
+pub unsafe fn pre_init() {
+    enable_simd();
+}
 
 pub unsafe fn init() {
     // Initialize Global Descriptor Table
@@ -48,9 +50,6 @@ pub unsafe fn init() {
 
     // Initialize Interrupt descriptor table
     interrupts::init_idt();
-
-    // Enable SSE and AVX
-    enable_simd();
 
     apic::init();
 }

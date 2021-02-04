@@ -116,7 +116,7 @@ pub fn get_random() -> Option<ChaChaRng> {
 /// Try to add bytes to the kernel entropy pool
 pub fn add_bytes_to_entropy_pool(bytes: &[u8]) {
     for byte in bytes {
-        if let Err(_) = ENTROPY_POOL.push(*byte) {
+        if ENTROPY_POOL.push(*byte).is_err() {
             return;
         }
     }

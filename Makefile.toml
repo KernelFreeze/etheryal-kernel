@@ -42,61 +42,38 @@ dependencies = [
     "install-clippy",
 ]
 
-[tasks.fmt-check]
+[tasks.format-check]
 install_crate = { rustup_component_name = "rustfmt-preview", binary = "rustfmt", test_arg = "--help" }
 command = "cargo"
 args = ["fmt", "--", "--color", "always", "--check"]
 
 [tasks.build]
-description = "Runs the rust compiler."
-category = "Build"
-command = "cargo"
-args = ["build"]
 dependencies = [
     "download-compiler-rt",
     "install-llvm-tools-preview",
     "install-rust-src",
 ]
-
-[tasks.build-release]
-description = "Runs the rust compiler on release mode."
-category = "Build"
-command = "cargo"
-args = ["build", "--release"]
-dependencies = [
-    "download-compiler-rt",
-    "install-llvm-tools-preview",
-    "install-rust-src",
-]
-
-[tasks.build-image]
-description = "Runs etheryal bootimage."
-category = "Build"
-command = "etheryal-bootimage"
-args = [
-    "--out",
-    "out",
-    "--build-cmd",
-    "make build-release",
-    "--target", "etheryal-kernel-x86_64",
-    "--create-out",
-    "build",
-]
-
-[tasks.run-qemu]
-description = "Runs etheryal bootimage, and start qemu emulator."
-category = "Build"
-command = "etheryal-bootimage"
-args = ["--out", "out", "--build-cmd", "make build-release", "--target", "etheryal-kernel-x86_64", "--create-out", "run"]
 
 [tasks.test]
-description = "Tests etheryal kernel."
-category = "Build"
-command = "etheryal-bootimage"
-args = ["--out", "out", "--build-cmd", "make build-release", "--target", "etheryal-kernel-x86_64", "--create-out", "test"]
+dependencies = [
+    "download-compiler-rt",
+    "install-llvm-tools-preview",
+    "install-rust-src",
+]
 
 [tasks.dev-test-flow]
-dependencies = ["format", "clippy", "build"]
+dependencies = ["format", "clippy", "test"]
 
 [tasks.build-flow]
-dependencies = ["format", "build-release"]
+dependencies = ["format", "build"]
+
+[tasks.run]
+description = "Runs etheryal in a virtual machine."
+category = "Build"
+command = "cargo"
+args = ["run"]
+dependencies = [
+    "download-compiler-rt",
+    "install-llvm-tools-preview",
+    "install-rust-src",
+]

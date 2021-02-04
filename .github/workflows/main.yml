@@ -41,9 +41,9 @@ jobs:
           cargo make --version
           cargo --version
           cargo fmt --version
-      - run: cargo make fmt-check
-  build-image:
-    name: build booteable image
+      - run: cargo make format-check
+  tests:
+    name: Run tests
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -62,5 +62,5 @@ jobs:
         run: |
           sudo apt update
           sudo apt install qemu-system-x86
-      - name: Build image
-        run: cargo make build-image --verbose
+      - name: Run Tests
+        run: cargo make test --verbose
