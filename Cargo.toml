@@ -9,22 +9,22 @@ description = "WASM and WASI capability-based Kernel. Unlike most historic kerne
 repository = "https://github.com/etheryal/bootimage"
 
 [build-dependencies]
-built = { git = "https://github.com/etheryal/built", version = "0.4.4", features = ["git2", "chrono"] }
+built = { git = "https://github.com/etheryal/built", features = ["git2", "chrono"] }
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
 # Random values
-uuid = { version = "0.8", default-features = false }
 rand_chacha = { version = "0.3", default-features = false }
 rand_core = { version = "0.6", default-features = false }
 
 # Boot
-bootloader = { version = "0.10.0-alpha-01", git = "https://github.com/etheryal/bootloader", branch = "uefi" }
+bootloader = { git = "https://github.com/etheryal/bootloader", branch = "uefi" }
 volatile = { version = "0.4", features = ["unstable"] }
 font8x8 = { version = "0.2", default-features = false, features = ["unicode"] }
 
 # Syncronization and async
+futures-intrusive = { version = "^0.4", default-features = false }
 spin = { version = "0.7", features = ["ticket_mutex"] }
 futures = { version = "0.3", default-features = false }
 crossbeam-queue = { version = "0.3.1", default-features = false, features = ["alloc"] }
@@ -34,7 +34,7 @@ buddy_system_allocator = "0.6"
 bitflags = "1.2"
 
 # Platform
-chrono = { version = "0.4.19", git = "https://github.com/chronotope/chrono", branch = "main", default-features = false, features = ["alloc"] }
+chrono = { git = "https://github.com/chronotope/chrono", branch = "main", default-features = false, features = ["alloc"] }
 log = { version = "0.4", default-features = false }
 qemu-exit = { version = "1.0", optional = true }
 acpi = "2.2.0"
@@ -44,14 +44,13 @@ acpi = "2.2.0"
 core_detect = "0.1"
 cmos = "0.1"
 x86_64 = { version = "0.13" }
-apic = { version = "0.1.0", git = "https://github.com/rust-osdev/apic" }
+apic = { git = "https://github.com/rust-osdev/apic" }
 
 [package.metadata.bootloader]
 map-physical-memory = true
 
 [dependencies.wasmi]
 git = "https://github.com/etheryal/wasmi"
-version = "0.7.0"
 default-features = false
 features = ["core"]
 

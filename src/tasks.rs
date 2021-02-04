@@ -23,23 +23,14 @@
 use alloc::boxed::Box;
 use core::future::Future;
 use core::pin::Pin;
+use core::sync::atomic::{AtomicU64, Ordering};
 use core::task::{Context, Poll};
-
-use rand_chacha::ChaChaRng;
-use rand_core::RngCore;
-use spin::{Lazy, Mutex};
-use uuid::Uuid;
 
 pub mod executor;
 pub mod waker;
 
-static RANDOM: Lazy<Mutex<ChaChaRng>> = Lazy::new(|| {
-    let random = crate::platform::random::get_random().expect("Failed to create tasks' random generator");
-    Mutex::from(random)
-});
-
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
-pub struct TaskId(Uuid);
+pub struct TaskId(u64);
 
 pub struct Task {
     id: TaskId,
@@ -61,15 +52,7 @@ impl Task {
 
 impl TaskId {
     fn new() -> Self {
-        use uuid::{Builder, Variant, Version};
-
-        let mut random_bytes = [0u8; 16];
-        RANDOM.lock().fill_bytes(&mut random_bytes);
-
-        let uuid = Builder::from_bytes(random_bytes)
-            .set_variant(Variant::RFC4122)
-            .set_version(Version::Random)
-            .build();
-        TaskId(uuid)
+        static NEXT_ID: AtomicU64 = AtomicU64::new(0);
+        TaskId(NEXT_ID.fetch_add(1, Ordering::Relaxed))
     }
 }

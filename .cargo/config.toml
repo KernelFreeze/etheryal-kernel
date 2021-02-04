@@ -2,7 +2,7 @@
 target = "targets/etheryal-kernel-x86_64.json"
 
 [target.'cfg(target_arch = "x86_64")']
-runner = "etheryal-bootimage run --timeout 300 --run-args=--no-reboot|-device|isa-debug-exit,iobase=0xf4,iosize=0x04|-nographic"
+runner = "etheryal-bootimage run --timeout 120 --run-args=--no-reboot|-device|isa-debug-exit,iobase=0xf4,iosize=0x04|-nographic"
 
 [unstable]
 build-std = ["core", "compiler_builtins", "alloc"]
