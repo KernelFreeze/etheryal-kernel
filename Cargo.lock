@@ -168,7 +168,6 @@ dependencies = [
  "crossbeam-queue",
  "font8x8",
  "futures",
- "libm",
  "log",
  "qemu-exit",
  "rand_chacha",

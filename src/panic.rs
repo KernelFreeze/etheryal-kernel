@@ -22,6 +22,7 @@
 
 use core::panic::PanicInfo;
 
+use crate::platform::exit::{exit_with, ExitDiagnostics};
 use crate::prelude::*;
 
 #[cfg(not(test))]
@@ -30,7 +31,7 @@ fn panic(info: &PanicInfo) -> ! {
     error!("Kernel panic!");
     info!("{}", info);
 
-    crate::platform::halt::permanent_halt();
+    exit_with(ExitDiagnostics::Panic);
 }
 
 #[cfg(test)]
@@ -39,5 +40,5 @@ fn panic(info: &PanicInfo) -> ! {
     error!("[failed]\n");
     info!("{}\n", info);
 
-    crate::platform::halt::permanent_halt();
+    exit_with(ExitDiagnostics::Panic);
 }

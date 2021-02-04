@@ -20,13 +20,28 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#[cfg(test)]
-pub fn run_all_tests(tests: &[&dyn Fn()]) {
-    use crate::prelude::info;
+use crate::prelude::info;
 
+#[cfg(test)]
+pub fn run_all_tests(tests: &[&dyn Testable]) {
     info!("Running {} tests", tests.len());
 
     for test in tests {
-        test();
+        test.run();
+    }
+}
+
+pub trait Testable {
+    fn run(&self);
+}
+
+impl<T> Testable for T
+where
+    T: Fn(),
+{
+    fn run(&self) {
+        info!("{}...\t", core::any::type_name::<T>());
+        self();
+        info!("[ok]");
     }
 }

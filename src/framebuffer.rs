@@ -21,6 +21,7 @@
 // SOFTWARE.
 
 use core::fmt;
+use core::fmt::Write;
 
 use bootloader::boot_info::{FrameBuffer, FrameBufferInfo, PixelFormat};
 use font8x8::UnicodeFonts;
@@ -30,7 +31,7 @@ use volatile::Volatile;
 const OFFSET: usize = 16;
 const CHARACTER_SPACE: usize = 8;
 
-pub static WRITER: Mutex<Option<FramebufferWriter>> = Mutex::new(None);
+static WRITER: Mutex<Option<FramebufferWriter>> = Mutex::new(None);
 
 pub fn init(writer: FramebufferWriter<'static>) {
     let mut global_writer = WRITER.try_lock().unwrap();
@@ -150,5 +151,21 @@ impl fmt::Write for FramebufferWriter<'_> {
     fn write_str(&mut self, s: &str) -> fmt::Result {
         self.write_string(s);
         Ok(())
+    }
+}
+
+pub fn print(args: fmt::Arguments) {
+    crate::framebuffer::WRITER
+        .lock()
+        .as_mut()
+        .unwrap()
+        .write_fmt(args)
+        .unwrap();
+}
+
+#[test_case]
+fn test_framebuffer() {
+    for i in 0..10 {
+        crate::framebuffer::print(format_args!("Test framebuffer {}\n", i));
     }
 }

@@ -17,6 +17,7 @@
         "bootloader",
         "etheryal",
         "framebuffer",
+        "libm",
         "memcmp",
         "memcpy",
         "memmove",

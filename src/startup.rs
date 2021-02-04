@@ -73,10 +73,10 @@ pub fn main(boot_info: &'static mut BootInfo) -> ! {
 
 #[cfg(test)]
 fn run_tests() -> ! {
-    use crate::platform::exit::ExitDiagnostics;
+    use crate::platform::exit::{exit_with, ExitDiagnostics};
 
     crate::test_main();
-    crate::platform::exit::exit_with(ExitDiagnostics::Success);
+    exit_with(ExitDiagnostics::Success);
 }
 
 #[cfg(not(test))]

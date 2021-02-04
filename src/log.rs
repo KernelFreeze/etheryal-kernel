@@ -19,19 +19,7 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
-
-use core::fmt::{self, Write};
-
 use log::{Level, Metadata, Record};
-
-fn print(args: fmt::Arguments) {
-    crate::framebuffer::WRITER
-        .lock()
-        .as_mut()
-        .unwrap()
-        .write_fmt(args)
-        .unwrap();
-}
 
 pub struct KernelLogger;
 
@@ -42,7 +30,7 @@ impl log::Log for KernelLogger {
 
     fn log(&self, record: &Record) {
         if self.enabled(record.metadata()) {
-            print(format_args!("{} - {}\n", record.level(), record.args()));
+            crate::framebuffer::print(format_args!("{} - {}\n", record.level(), record.args()));
         }
     }
 
