@@ -54,4 +54,5 @@ pub mod datetime;
 pub mod exit;
 pub mod framebuffer;
 pub mod halt;
+pub mod interrupts;
 pub mod random;

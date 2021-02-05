@@ -1,3 +1,4 @@
 /target
-/out
 /libs
+*.img
+*.elf

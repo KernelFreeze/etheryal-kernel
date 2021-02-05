@@ -22,9 +22,8 @@
 
 use bootloader::BootInfo;
 
-use crate::logger::KernelLogger;
 use crate::prelude::*;
-use crate::{build_info, *};
+use crate::*;
 
 pub fn main(boot_info: &'static mut BootInfo) -> ! {
     platform::pre_init();
@@ -35,11 +34,6 @@ pub fn main(boot_info: &'static mut BootInfo) -> ! {
         platform::framebuffer::init(framebuffer);
     }
 
-    // Initialize logger
-    log::set_logger(&KernelLogger)
-        .map(|_| log::set_max_level(LevelFilter::Info))
-        .expect("Failed to initialize logger");
-
     // Initialize memory allocation
     let memory_offset = boot_info
         .physical_memory_offset
@@ -47,33 +41,24 @@ pub fn main(boot_info: &'static mut BootInfo) -> ! {
         .expect("Failed to map virtual memory address.");
     memory::init(&mut boot_info.memory_regions, memory_offset);
 
-    // Display build information
+    // Initialize logger
+    log::set_logger(&logger::KERNEL_LOGGER)
+        .map(|_| log::set_max_level(LevelFilter::Info))
+        .expect("Failed to initialize logger");
     info!("etheryal kernel v{}", build_info::PKG_VERSION);
     info!("build with {}", build_info::RUSTC_VERSION);
 
     platform::init();
-
-    #[cfg(test)]
-    run_tests();
-
-    #[cfg(not(test))]
     init_scheduler();
 }
 
-#[cfg(test)]
-fn run_tests() -> ! {
-    use platform::exit::{exit_with, ExitDiagnostics};
-
-    test_main();
-    exit_with(ExitDiagnostics::Success);
-}
-
-#[cfg(not(test))]
 fn init_scheduler() -> ! {
     use tasks::executor::TaskExecutor;
 
     let mut task_executor = TaskExecutor::new();
-    // task_executor.spawn(async {
-    // crate::wasm::run_binary_program(&[]).await.unwrap() });
+
+    // Setup init tasks
+    #[cfg(test)]
+    tests::register_tasks(&mut task_executor);
     task_executor.run();
 }

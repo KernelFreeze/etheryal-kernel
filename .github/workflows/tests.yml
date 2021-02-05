@@ -44,5 +44,4 @@ jobs:
           sudo apt install qemu-system-x86
       - name: Run Tests
         run: |
-          mkdir -p out
           cargo make test --verbose

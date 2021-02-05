@@ -24,10 +24,9 @@ volatile = { version = "0.4", features = ["unstable"] }
 font8x8 = { version = "0.2", default-features = false, features = ["unicode"] }
 
 # Syncronization and async
-futures-intrusive = { version = "^0.4", default-features = false }
 spin = { version = "0.7", features = ["ticket_mutex"] }
 futures = { version = "0.3", default-features = false }
-crossbeam-queue = { version = "0.3.1", default-features = false, features = ["alloc"] }
+crossbeam-queue = { version = "0.3", default-features = false, features = ["alloc", "nightly"] }
 
 # Memory management
 buddy_system_allocator = "0.6"
@@ -36,8 +35,10 @@ bitflags = "1.2"
 # Platform
 chrono = { git = "https://github.com/chronotope/chrono", branch = "main", default-features = false, features = ["alloc"] }
 log = { version = "0.4", default-features = false }
+acpi = "2.2"
+
+# Debug and Testing
 qemu-exit = { version = "1.0", optional = true }
-acpi = "2.2.0"
 
 # Platform specifics
 [target.'cfg(target_arch = "x86_64")'.dependencies]
@@ -45,6 +46,9 @@ core_detect = "0.1"
 cmos = "0.1"
 x86_64 = { version = "0.13" }
 apic = { git = "https://github.com/rust-osdev/apic" }
+
+# Debug and Testing
+uart_16550 = { version = "0.2", optional = true }
 
 [package.metadata.bootloader]
 map-physical-memory = true
@@ -63,4 +67,4 @@ lto = true
 
 [features]
 default = ["qemu"]
-qemu = ["qemu-exit"]
+qemu = ["qemu-exit", "uart_16550"]

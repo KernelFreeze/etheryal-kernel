@@ -19,24 +19,59 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
-use log::{Level, Metadata, Record};
 
-pub struct KernelLogger;
+use crossbeam_queue::ArrayQueue;
+use log::{Log, Metadata, Record};
+use spin::{Lazy, Once};
 
-impl log::Log for KernelLogger {
-    fn enabled(&self, metadata: &Metadata) -> bool {
-        metadata.level() <= Level::Info
-    }
+use crate::prelude::*;
 
-    fn log(&self, record: &Record) {
-        if self.enabled(record.metadata()) {
-            crate::platform::framebuffer::print_text(format_args!(
-                "{} - {}\n",
-                record.level(),
-                record.args()
-            ));
+const KERNEL_LOG_QUEUE_SIZE: usize = 512;
+
+pub static KERNEL_LOGGER: KernelLogger = KernelLogger::new();
+pub type LoggerCallback = fn();
+
+pub struct KernelLogger {
+    logs: Lazy<ArrayQueue<String>>,
+    callback: Once<LoggerCallback>,
+}
+
+impl KernelLogger {
+    pub const fn new() -> KernelLogger {
+        KernelLogger {
+            logs: Lazy::new(|| ArrayQueue::new(KERNEL_LOG_QUEUE_SIZE)),
+            callback: Once::new(),
         }
     }
 
-    fn flush(&self) {}
+    pub fn get_logs(&self) -> &ArrayQueue<String> {
+        &self.logs
+    }
+
+    pub fn set_callback(&self, callback: LoggerCallback) {
+        self.callback.call_once(|| callback);
+    }
+}
+
+impl Log for KernelLogger {
+    fn enabled(&self, _: &Metadata) -> bool {
+        true
+    }
+
+    fn log(&self, record: &Record) {
+        // Discard last log if queue is full
+        if self.logs.is_full() {
+            let _ = self.logs.pop();
+        }
+        self.logs
+            .push(format!("{} - {}\n", record.level(), record.args()))
+            .expect("Failed to free log queue");
+        self.flush();
+    }
+
+    fn flush(&self) {
+        if let Some(callback) = self.callback.get() {
+            callback();
+        }
+    }
 }

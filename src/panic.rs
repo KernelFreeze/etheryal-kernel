@@ -20,25 +20,33 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+use core::fmt::Write;
 use core::panic::PanicInfo;
 
+use crate::platform;
 use crate::platform::exit::{exit_with, ExitDiagnostics};
 use crate::prelude::*;
 
-#[cfg(not(test))]
 #[panic_handler]
 fn panic(info: &PanicInfo) -> ! {
+    #[cfg(not(test))]
+    error!("Kernel panic!");
+
+    #[cfg(test)]
     error!("Kernel panic!");
     info!("{}", info);
 
-    exit_with(ExitDiagnostics::Panic);
-}
+    // Clear screen and display error message
+    platform::interrupts::without_interrupts(|| {
+        if let Some(framebuffer) = platform::framebuffer::WRITER.lock().as_mut() {
+            framebuffer.clear();
 
-#[cfg(test)]
-#[panic_handler]
-fn panic(info: &PanicInfo) -> ! {
-    error!("[failed]\n");
-    info!("{}\n", info);
+            let _ = framebuffer.write_str("You need to restart your computer.\n");
+            let _ = framebuffer.write_str("Press the restart button, or hold the power button.\n\n");
+            let _ = framebuffer.write_str("etheryal kernel encountered an error.\n");
+            let _ = framebuffer.write_fmt(format_args!("{}\n", info));
+        }
+    });
 
     exit_with(ExitDiagnostics::Panic);
 }

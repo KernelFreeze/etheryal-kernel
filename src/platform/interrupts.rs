@@ -20,44 +20,14 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#![allow(dead_code)]
-#![feature(
-    abi_x86_interrupt,
-    custom_test_frameworks,
-    default_alloc_error_handler,
-    wake_trait,
-    const_mut_refs,
-    async_closure,
-    alloc_prelude,
-    asm,
-    once_cell,
-    box_syntax,
-    const_fn_fn_ptr_basics
-)]
-#![test_runner(crate::tests::run_all_tests)]
-#![reexport_test_harness_main = "test_main"]
-#![no_std]
-#![no_main]
+/// Run the given closure, disabling interrupts before running it (if they
+/// aren't already disabled). Afterwards, interrupts are enabling again if they
+/// were enabled before.
 
-mod driver;
-mod logger;
-mod memory;
-mod panic;
-mod platform;
-mod prelude;
-mod startup;
-mod tasks;
-mod tests;
-mod wasm;
-
-bootloader::entry_point!(startup::main);
-
-extern crate alloc;
-
-pub mod build_info {
-    core::include!(concat!(env!("OUT_DIR"), "/built.rs"));
-
-    pub fn release_is_unstable() -> bool {
-        !PKG_VERSION_PRE.is_empty() || GIT_VERSION.is_some()
-    }
+#[cfg(target_arch = "x86_64")]
+#[inline(always)]
+pub fn without_interrupts<F, R>(f: F) -> R
+where
+    F: FnOnce() -> R, {
+    x86_64::instructions::interrupts::without_interrupts(f)
 }
