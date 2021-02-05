@@ -7,7 +7,7 @@ env:
 
 jobs:
   linter:
-    name: Check Linter
+    name: Submit coverage report
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -16,10 +16,12 @@ jobs:
           rustup set profile minimal
           rustup toolchain update nightly --no-self-update
           rustup default nightly
+          rustup component add rust-src
+          rustup component add llvm-tools-preview
           curl -L https://github.com/mozilla/grcov/releases/latest/download/grcov-linux-x86_64.tar.bz2 | tar jxf -
           rustup show
           cargo --version
-      - name: Download grcov
+      - name: Generate Coverage Report
         run: |
           export CARGO_INCREMENTAL=0
           export RUSTFLAGS="-Zprofile -Ccodegen-units=1 -Copt-level=0 -Clink-dead-code -Coverflow-checks=off -Zpanic_abort_tests -Cpanic=abort"
