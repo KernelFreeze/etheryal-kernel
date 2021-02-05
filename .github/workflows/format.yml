@@ -1,4 +1,4 @@
-name: Format
+name: 'Format check'
 
 # on: [push, pull_request]
 on: [pull_request]
