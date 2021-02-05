@@ -22,6 +22,5 @@ jobs:
           rustup show
           cargo --version
           cargo make --version
-          cargo --version
           cargo fmt --version
       - run: cargo make format-check

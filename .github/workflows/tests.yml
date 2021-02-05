@@ -21,7 +21,6 @@ jobs:
           rustup show
           cargo --version
           cargo make --version
-          cargo --version
           cargo clippy --version
       - run: cargo make clippy
   tests:
