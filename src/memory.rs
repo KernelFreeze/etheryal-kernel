@@ -26,16 +26,13 @@ use buddy_system_allocator::LockedHeap;
 #[global_allocator]
 static ALLOCATOR: LockedHeap = LockedHeap::empty();
 
-pub fn init(memory_regions: &mut [MemoryRegion], offset: u64) {
+pub fn init(memory_regions: &mut [MemoryRegion], offset: usize) {
     let mut allocator = ALLOCATOR.lock();
 
     memory_regions
         .iter()
         .filter(|r| r.kind == MemoryRegionKind::Usable)
-        .for_each(|region| unsafe {
-            let start = (region.start + offset) as usize;
-            let end = (region.end + offset) as usize;
-
-            allocator.add_to_heap(start, end)
-        });
+        .map(|region| (region.start as usize, region.end as usize))
+        .map(|(start, end)| (start + offset, end + offset))
+        .for_each(|(start, end)| unsafe { allocator.add_to_heap(start, end) });
 }

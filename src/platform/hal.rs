@@ -20,11 +20,5 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#[cfg(target_arch = "aarch64")]
-pub mod aarch64;
-#[cfg(target_arch = "arm")]
-pub mod arm;
-#[cfg(target_arch = "riscv32imac")]
-pub mod riscv32imac;
 #[cfg(target_arch = "x86_64")]
 pub mod x86_64;

@@ -26,7 +26,9 @@ use crate::prelude::*;
 use crate::*;
 
 pub fn main(boot_info: &'static mut BootInfo) -> ! {
-    platform::pre_init();
+    unsafe {
+        platform::pre_init();
+    }
 
     // Initialize screen output
     let framebuffer = boot_info.framebuffer.as_mut();
@@ -38,8 +40,12 @@ pub fn main(boot_info: &'static mut BootInfo) -> ! {
     let memory_offset = boot_info
         .physical_memory_offset
         .into_option()
-        .expect("Failed to map virtual memory address.");
+        .expect("Failed to map virtual memory address.") as usize;
     memory::init(&mut boot_info.memory_regions, memory_offset);
+    let rsdp_address = boot_info
+        .rsdp_addr
+        .into_option()
+        .expect("Failed to obtain RDSP address from bootloader.") as usize;
 
     // Initialize logger
     log::set_logger(&logger::KERNEL_LOGGER)
@@ -48,7 +54,15 @@ pub fn main(boot_info: &'static mut BootInfo) -> ! {
     info!("etheryal kernel v{}", build_info::PKG_VERSION);
     info!("build with {}", build_info::RUSTC_VERSION);
 
-    platform::init();
+    // Make qemu log everything to serial port when testing
+    #[cfg(all(test, feature = "qemu", target_arch = "x86_64"))]
+    logger::KERNEL_LOGGER.set_callback(tests::logger_callback);
+
+    unsafe {
+        platform::power::create_acpi_tables(memory_offset, rsdp_address);
+        platform::init();
+    }
+
     init_scheduler();
 }
 

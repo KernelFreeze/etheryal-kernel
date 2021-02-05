@@ -42,17 +42,13 @@ pub fn register_tasks(executor: &mut TaskExecutor) {
 async fn run_tests() {
     use crate::platform::exit::{exit_with, ExitDiagnostics};
 
-    // Make qemu log all to serial port when testing on x86-64
-    #[cfg(all(test, feature = "qemu", target_arch = "x86_64"))]
-    crate::logger::KERNEL_LOGGER.set_callback(logger_callback);
-
     crate::test_main();
     exit_with(ExitDiagnostics::Success);
 }
 
 /// Log implementation using qemu with a uart 1660 serial port
 #[cfg(all(test, feature = "qemu", target_arch = "x86_64"))]
-fn logger_callback() {
+pub fn logger_callback() {
     use core::fmt::Write;
 
     use spin::{Lazy, Mutex};

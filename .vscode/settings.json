@@ -25,6 +25,7 @@
         "microkernel",
         "microkernels",
         "prng",
+        "rsdp",
         "rustc",
         "simd",
         "uart"

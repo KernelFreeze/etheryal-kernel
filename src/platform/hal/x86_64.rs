@@ -40,18 +40,14 @@ unsafe fn enable_simd() {
     }
 }
 
-pub fn pre_init() {
-    unsafe {
-        enable_simd();
-    }
+pub unsafe fn pre_init() {
+    enable_simd();
 }
 
-pub fn init() {
-    unsafe {
-        gdt::init();
-        interrupts::init_idt();
-        apic::init();
-    }
+pub unsafe fn init() {
+    gdt::init();
+    interrupts::init_idt();
+    apic::init();
 }
 
 pub mod apic;
