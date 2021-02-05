@@ -1,6 +1,6 @@
 // MIT License
 //
-// Copyright (c) 2021 The etheryal Project Developers
+// Copyright (c) 2021 Miguel Peláez
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,16 +23,16 @@
 #[cfg(target_arch = "x86_64")]
 #[inline(always)]
 pub unsafe fn init() {
-    hal::x86_64::init();
+    arch::x86_64::init();
 }
 
 #[cfg(target_arch = "x86_64")]
 #[inline(always)]
 pub unsafe fn pre_init() {
-    hal::x86_64::pre_init();
+    arch::x86_64::pre_init();
 }
 
-mod hal;
+mod arch;
 
 pub mod datetime;
 pub mod exit;

@@ -1,6 +1,6 @@
 // MIT License
 //
-// Copyright (c) 2021 The etheryal Project Developers
+// Copyright (c) 2021 Miguel Peláez
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -36,12 +36,6 @@ impl EtheryalAcpiHandler {
 }
 
 impl AcpiHandler for EtheryalAcpiHandler {
-    /// Given a physical address and a size, map a region of physical memory
-    /// that contains `T` (note: the passed size may be larger than
-    /// `size_of::<T>()`). The address is not necessarily page-aligned, so the
-    /// implementation may need to map more than `size` bytes. The virtual
-    /// address the region is mapped to does not matter, as long as it is
-    /// accessible to `acpi`.
     unsafe fn map_physical_region<T>(
         &self, physical_address: usize, size: usize,
     ) -> PhysicalMapping<Self, T> {
@@ -55,17 +49,11 @@ impl AcpiHandler for EtheryalAcpiHandler {
         }
     }
 
-    /// Unmap the given physical mapping. This is called when a
-    /// `PhysicalMapping` is dropped.
     fn unmap_physical_region<T>(&self, _region: &PhysicalMapping<Self, T>) {}
 }
 
-pub unsafe fn create_acpi_tables(
-    memory_offset: usize, rsdp_address: usize,
-) -> AcpiTables<EtheryalAcpiHandler> {
-    let handler = EtheryalAcpiHandler::new(memory_offset);
-    let tables = AcpiTables::from_rsdp(handler, rsdp_address)
-        .expect("Failed to parse required ACPI tables from bootloader provided RSDP.");
-
-    tables
+pub unsafe fn create_acpi_tables(offset: usize, rsdp_address: usize) -> AcpiTables<EtheryalAcpiHandler> {
+    let handler = EtheryalAcpiHandler::new(offset);
+    AcpiTables::from_rsdp(handler, rsdp_address)
+        .expect("Failed to parse required ACPI tables from bootloader provided RSDP.")
 }

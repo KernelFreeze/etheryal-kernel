@@ -1,6 +1,6 @@
 // MIT License
 //
-// Copyright (c) 2021 The etheryal Project Developers
+// Copyright (c) 2021 Miguel Peláez
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -65,7 +65,7 @@ impl Log for KernelLogger {
         }
         self.logs
             .push(format!("{} - {}\n", record.level(), record.args()))
-            .expect("Failed to free log queue");
+            .expect("Failed to free log queue.");
         self.flush();
     }
 

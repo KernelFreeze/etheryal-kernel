@@ -1,6 +1,6 @@
 // MIT License
 //
-// Copyright (c) 2021 The etheryal Project Developers
+// Copyright (c) 2021 Miguel Peláez
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -35,4 +35,9 @@ pub fn init(memory_regions: &mut [MemoryRegion], offset: usize) {
         .map(|region| (region.start as usize, region.end as usize))
         .map(|(start, end)| (start + offset, end + offset))
         .for_each(|(start, end)| unsafe { allocator.add_to_heap(start, end) });
+}
+
+#[test_case]
+fn test_allocator() {
+    box 10;
 }

@@ -1,6 +1,6 @@
 // MIT License
 //
-// Copyright (c) 2021 The etheryal Project Developers
+// Copyright (c) 2021 Miguel Peláez
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -22,7 +22,7 @@
 
 #[derive(Copy, Clone, Debug)]
 /// Used to obtain random numbers using x86_64's RDSEED opcode
-pub struct RdSeed(());
+struct RdSeed(());
 
 impl RdSeed {
     /// Creates Some(RdSeed) if RDSEED is supported, None otherwise
@@ -81,5 +81,28 @@ impl RdSeed {
                 },
             }
         }
+    }
+}
+
+pub async fn get_secure_random() -> Option<[u8; 32]> {
+    fn u64_to_u8_array(array: [u64; 4]) -> [u8; 32] {
+        unsafe { core::mem::transmute(array) }
+    }
+
+    match RdSeed::new() {
+        Some(seeder) => {
+            let mut seed = [0u64; 4];
+
+            for part in seed.iter_mut() {
+                match seeder.get_u64() {
+                    Some(random) => *part = random,
+                    None => return None,
+                }
+                crate::tasks::park::yield_now().await;
+            }
+
+            Some(u64_to_u8_array(seed))
+        },
+        None => None,
     }
 }

@@ -1,6 +1,6 @@
 // MIT License
 //
-// Copyright (c) 2021 The etheryal Project Developers
+// Copyright (c) 2021 Miguel Peláez
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -50,17 +50,13 @@ pub fn main(boot_info: &'static mut BootInfo) -> ! {
     // Initialize logger
     log::set_logger(&logger::KERNEL_LOGGER)
         .map(|_| log::set_max_level(LevelFilter::Info))
-        .expect("Failed to initialize logger");
+        .expect("Failed to initialize logger.");
     info!("etheryal kernel v{}", build_info::PKG_VERSION);
     info!("build with {}", build_info::RUSTC_VERSION);
 
-    // Make qemu log everything to serial port when testing
-    #[cfg(all(test, feature = "qemu", target_arch = "x86_64"))]
-    logger::KERNEL_LOGGER.set_callback(tests::logger_callback);
-
     unsafe {
-        platform::power::create_acpi_tables(memory_offset, rsdp_address);
         platform::init();
+        platform::power::create_acpi_tables(memory_offset, rsdp_address);
     }
 
     init_scheduler();

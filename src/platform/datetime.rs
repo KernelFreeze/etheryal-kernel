@@ -1,6 +1,6 @@
 // MIT License
 //
-// Copyright (c) 2021 The etheryal Project Developers
+// Copyright (c) 2021 Miguel Peláez
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,5 +24,5 @@ use chrono::prelude::*;
 
 #[cfg(target_arch = "x86_64")]
 pub fn get_datetime() -> DateTime<Utc> {
-    super::hal::x86_64::date::read_datetime()
+    super::arch::x86_64::date::read_datetime()
 }

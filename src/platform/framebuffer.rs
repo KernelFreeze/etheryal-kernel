@@ -1,6 +1,6 @@
 // MIT License
 //
-// Copyright (c) 2021 The etheryal Project Developers
+// Copyright (c) 2021 Miguel Peláez
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -33,7 +33,7 @@ const CHARACTER_SPACE: usize = 8;
 pub static WRITER: Mutex<Option<FramebufferWriter>> = Mutex::new(None);
 
 pub fn init(framebuffer: &'static mut FrameBuffer) {
-    const ALREADY_INIT_ERROR: &str = "Global writer already initialized";
+    const ALREADY_INIT_ERROR: &str = "Global writer already initialized.";
 
     let mut global_writer = WRITER.try_lock().expect(ALREADY_INIT_ERROR);
     assert!(global_writer.is_none(), ALREADY_INIT_ERROR);
@@ -103,7 +103,7 @@ impl<'a> FramebufferWriter<'a> {
                 }
                 let rendered = font8x8::BASIC_FONTS
                     .get(c)
-                    .expect("character not found in basic font");
+                    .expect("character not found in basic font.");
                 self.write_rendered_char(rendered);
             },
         }

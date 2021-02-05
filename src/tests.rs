@@ -1,6 +1,6 @@
 // MIT License
 //
-// Copyright (c) 2021 The etheryal Project Developers
+// Copyright (c) 2021 Miguel Peláez
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -44,27 +44,6 @@ async fn run_tests() {
 
     crate::test_main();
     exit_with(ExitDiagnostics::Success);
-}
-
-/// Log implementation using qemu with a uart 1660 serial port
-#[cfg(all(test, feature = "qemu", target_arch = "x86_64"))]
-pub fn logger_callback() {
-    use core::fmt::Write;
-
-    use spin::{Lazy, Mutex};
-    use uart_16550::SerialPort;
-
-    static SERIAL1: Lazy<Mutex<SerialPort>> = Lazy::new(|| {
-        let mut serial_port = unsafe { SerialPort::new(0x3F8) };
-        serial_port.init();
-        Mutex::new(serial_port)
-    });
-
-    while let Some(log) = crate::logger::KERNEL_LOGGER.get_logs().pop() {
-        crate::platform::interrupts::without_interrupts(|| {
-            SERIAL1.lock().write_str(&log).expect("Printing to serial failed");
-        });
-    }
 }
 
 pub trait Testable {

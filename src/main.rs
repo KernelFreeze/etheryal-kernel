@@ -1,6 +1,6 @@
 // MIT License
 //
-// Copyright (c) 2021 The etheryal Project Developers
+// Copyright (c) 2021 Miguel Peláez
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -40,17 +40,17 @@
 #![no_main]
 
 mod driver;
+mod init;
 mod logger;
 mod memory;
 mod panic;
 mod platform;
 mod prelude;
-mod startup;
 mod tasks;
 mod tests;
 mod wasm;
 
-bootloader::entry_point!(startup::main);
+bootloader::entry_point!(init::main);
 
 extern crate alloc;
 

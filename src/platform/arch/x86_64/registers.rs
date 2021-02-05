@@ -20,16 +20,4 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-use rand_chacha::ChaChaRng;
-use rand_core::SeedableRng;
-
-/// Get a seed that is safe to use for creation of PRNGs
-#[cfg(target_arch = "x86_64")]
-pub async fn get_secure_random() -> Option<[u8; 32]> {
-    super::arch::x86_64::random::get_secure_random().await
-}
-
-/// Get a random number generator
-pub async fn get_random() -> Option<ChaChaRng> {
-    get_secure_random().await.map(ChaChaRng::from_seed)
-}
+pub mod control;

@@ -1,6 +1,6 @@
 // MIT License
 //
-// Copyright (c) 2021 The etheryal Project Developers
+// Copyright (c) 2021 Miguel Peláez
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,5 +20,30 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#[cfg(target_arch = "x86_64")]
-pub mod x86_64;
+use core::future::Future;
+use core::pin::Pin;
+use core::task::{Context, Poll};
+
+#[inline]
+pub(crate) async fn yield_now() {
+    YieldNow(false).await
+}
+
+struct YieldNow(bool);
+
+impl Future for YieldNow {
+    type Output = ();
+
+    // The futures executor is implemented as a FIFO queue, so all this future
+    // does is re-schedule the future back to the end of the queue, giving room
+    // for other futures to progress.
+    fn poll(mut self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Self::Output> {
+        if !self.0 {
+            self.0 = true;
+            cx.waker().wake_by_ref();
+            Poll::Pending
+        } else {
+            Poll::Ready(())
+        }
+    }
+}
