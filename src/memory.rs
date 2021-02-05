@@ -39,5 +39,5 @@ pub fn init(memory_regions: &mut [MemoryRegion], offset: usize) {
 
 #[test_case]
 fn test_allocator() {
-    box 10;
+    log::info!("{:?}", box 10)
 }

@@ -24,12 +24,27 @@ use core::future::Future;
 use core::pin::Pin;
 use core::task::{Context, Poll};
 
+use chrono::Duration;
+
 #[inline]
-pub(crate) async fn yield_now() {
-    YieldNow(false).await
+pub async fn yield_now() {
+    YieldNow::new().await
 }
 
-struct YieldNow(bool);
+#[inline]
+pub async fn sleep(duration: Duration) {
+    Sleep::new(duration).await
+}
+
+struct YieldNow {
+    inner: bool,
+}
+
+impl YieldNow {
+    fn new() -> Self {
+        Self { inner: false }
+    }
+}
 
 impl Future for YieldNow {
     type Output = ();
@@ -38,12 +53,30 @@ impl Future for YieldNow {
     // does is re-schedule the future back to the end of the queue, giving room
     // for other futures to progress.
     fn poll(mut self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Self::Output> {
-        if !self.0 {
-            self.0 = true;
+        if !self.inner {
+            self.inner = true;
             cx.waker().wake_by_ref();
             Poll::Pending
         } else {
             Poll::Ready(())
         }
+    }
+}
+
+struct Sleep {
+    duration: Duration,
+}
+
+impl Sleep {
+    fn new(duration: Duration) -> Self {
+        Self { duration }
+    }
+}
+
+impl Future for Sleep {
+    type Output = ();
+
+    fn poll(self: Pin<&mut Self>, _cx: &mut Context<'_>) -> Poll<Self::Output> {
+        todo!()
     }
 }
