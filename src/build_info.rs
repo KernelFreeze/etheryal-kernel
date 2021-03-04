@@ -20,36 +20,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#![allow(dead_code)]
-#![feature(
-    abi_x86_interrupt,
-    custom_test_frameworks,
-    default_alloc_error_handler,
-    const_mut_refs,
-    async_closure,
-    alloc_prelude,
-    asm,
-    once_cell,
-    box_syntax,
-    const_fn_fn_ptr_basics
-)]
-#![test_runner(crate::tests::run_all_tests)]
-#![reexport_test_harness_main = "test_main"]
-#![no_std]
-#![no_main]
+core::include!(concat!(env!("OUT_DIR"), "/built.rs"));
 
-mod build_info;
-mod driver;
-mod init;
-mod logger;
-mod memory;
-mod panic;
-mod platform;
-mod prelude;
-mod tasks;
-mod tests;
-mod wasm;
-
-bootloader::entry_point!(init::main);
-
-extern crate alloc;
+pub fn release_is_unstable() -> bool {
+    !PKG_VERSION_PRE.is_empty() || GIT_VERSION.is_some()
+}

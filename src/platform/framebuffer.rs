@@ -33,10 +33,8 @@ const CHARACTER_SPACE: usize = 8;
 pub static WRITER: Mutex<Option<FramebufferWriter>> = Mutex::new(None);
 
 pub fn init(framebuffer: &'static mut FrameBuffer) {
-    const ALREADY_INIT_ERROR: &str = "Global writer already initialized.";
-
-    let mut global_writer = WRITER.try_lock().expect(ALREADY_INIT_ERROR);
-    assert!(global_writer.is_none(), ALREADY_INIT_ERROR);
+    let mut global_writer = WRITER.try_lock().expect("Failed to lock Global Writer.");
+    assert!(global_writer.is_none(), "Global Writer already initialized.");
     *global_writer = Some(FramebufferWriter::new(framebuffer));
 }
 
