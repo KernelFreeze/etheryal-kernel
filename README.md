@@ -1,4 +1,4 @@
-[![GitHub Workflow Status](https://img.shields.io/github/workflow/status/etheryal/etheryal-kernel/Tests)](https://github.com/etheryal/etheryal-kernel/actions)
+[![GitHub Workflow Status](https://img.shields.io/github/workflow/status/etheryal/etheryal-kernel/Unit%20and%20Integration%20Tests)](https://github.com/etheryal/etheryal-kernel/actions)
 [![Discord](https://img.shields.io/discord/805182661348818965)](https://discord.gg/dsY99BV2PT)
 [![Lines of code](https://tokei.rs/b1/github/etheryal/etheryal-kernel?category=code)](https://github.com/XAMPPRocky/tokei)
 
